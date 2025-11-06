@@ -1,0 +1,226 @@
+{
+  "pesanans": [
+    {
+      "id": "P0002",
+      "nama_pemesan": "Sari Dewi",
+      "alamat": "Jl. Sudirman No. 45, Bandung",
+      "tanggal": "2024-01-16",
+      "status": "proses",
+      "status_pengambilan": "diantar",
+      "total_harga": 60000,
+      "uid": "U0002",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0002",
+          "nama_barang": "Beras Premium 1kg",
+          "harga_barang": 12000,
+          "qty": 5
+        }
+      ]
+    },
+    {
+      "id": "P0003",
+      "nama_pemesan": "Ahmad Fauzi",
+      "alamat": "Jl. Gatot Subroto No. 78, Surabaya",
+      "tanggal": "2024-01-17",
+      "status": "selesai",
+      "status_pengambilan": "diantar",
+      "total_harga": 83000,
+      "uid": "U0003",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0004",
+          "nama_barang": "Telur Ayam 1kg",
+          "harga_barang": 5000,
+          "qty": 3
+        },
+        {
+          "barang_id": "B0006",
+          "nama_barang": "Kopi Bubuk 250gr",
+          "harga_barang": 25000,
+          "qty": 2
+        },
+        {
+          "barang_id": "B0008",
+          "nama_barang": "Garam Halus 500gr",
+          "harga_barang": 9000,
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "P0004",
+      "nama_pemesan": "Dewi Lestari",
+      "alamat": "Jl. Thamrin No. 56, Medan",
+      "tanggal": "2024-01-18",
+      "status": "batal",
+      "status_pengambilan": "diambil",
+      "total_harga": 21000,
+      "uid": "U0004",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0005",
+          "nama_barang": "Tepung Terigu 1kg",
+          "harga_barang": 7000,
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "P0005",
+      "nama_pemesan": "Rudi Hermawan",
+      "alamat": "Jl. Pemuda No. 89, Yogyakarta",
+      "tanggal": "2024-01-19",
+      "status": "selesai",
+      "status_pengambilan": "diambil",
+      "total_harga": 102000,
+      "uid": "U0005",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0001",
+          "nama_barang": "Gula Pasir 1kg",
+          "harga_barang": 15000,
+          "qty": 2
+        },
+        {
+          "barang_id": "B0003",
+          "nama_barang": "Minyak Goreng 1L",
+          "harga_barang": 8000,
+          "qty": 4
+        },
+        {
+          "barang_id": "B0009",
+          "nama_barang": "Mentega 200gr",
+          "harga_barang": 15000,
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "P0006",
+      "nama_pemesan": "Lisa Anggraeni",
+      "alamat": "Jl. Asia Afrika No. 34, Semarang",
+      "tanggal": "2024-01-20",
+      "status": "proses",
+      "status_pengambilan": "diantar",
+      "total_harga": 50000,
+      "uid": "U0006",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0006",
+          "nama_barang": "Kopi Bubuk 250gr",
+          "harga_barang": 25000,
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "P0007",
+      "nama_pemesan": "Fajar Pratama",
+      "alamat": "Jl. Diponegoro No. 67, Malang",
+      "tanggal": "2024-01-21",
+      "status": "selesai",
+      "status_pengambilan": "diantar",
+      "total_harga": 123000,
+      "uid": "U0007",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0002",
+          "nama_barang": "Beras Premium 1kg",
+          "harga_barang": 12000,
+          "qty": 4
+        },
+        {
+          "barang_id": "B0007",
+          "nama_barang": "Susu UHT 1L",
+          "harga_barang": 18000,
+          "qty": 3
+        },
+        {
+          "barang_id": "B0010",
+          "nama_barang": "Kecap Manis 600ml",
+          "harga_barang": 12000,
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "P0008",
+      "nama_pemesan": "Maya Sari",
+      "alamat": "Jl. Ahmad Yani No. 12, Bali",
+      "tanggal": "2024-01-22",
+      "status": "selesai",
+      "status_pengambilan": "diambil",
+      "total_harga": 45000,
+      "uid": "U0008",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0008",
+          "nama_barang": "Garam Halus 500gr",
+          "harga_barang": 9000,
+          "qty": 5
+        }
+      ]
+    },
+    {
+      "id": "P0009",
+      "nama_pemesan": "Hendra Wijaya",
+      "alamat": "Jl. Sisingamangaraja No. 23, Makassar",
+      "tanggal": "2024-01-23",
+      "status": "proses",
+      "status_pengambilan": "diantar",
+      "total_harga": 150000,
+      "uid": "U0009",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0004",
+          "nama_barang": "Telur Ayam 1kg",
+          "harga_barang": 5000,
+          "qty": 6
+        },
+        {
+          "barang_id": "B0009",
+          "nama_barang": "Mentega 200gr",
+          "harga_barang": 15000,
+          "qty": 4
+        },
+        {
+          "barang_id": "B0005",
+          "nama_barang": "Tepung Terigu 1kg",
+          "harga_barang": 7000,
+          "qty": 6
+        }
+      ]
+    },
+    {
+      "id": "P0010",
+      "nama_pemesan": "Rina Marlina",
+      "alamat": "Jl. Pahlawan No. 90, Palembang",
+      "tanggal": "2024-01-24",
+      "status": "selesai",
+      "status_pengambilan": "diambil",
+      "total_harga": 72000,
+      "uid": "U0010",
+      "barang_dipesan": [
+        {
+          "barang_id": "B0010",
+          "nama_barang": "Kecap Manis 600ml",
+          "harga_barang": 12000,
+          "qty": 3
+        },
+        {
+          "barang_id": "B0001",
+          "nama_barang": "Gula Pasir 1kg",
+          "harga_barang": 15000,
+          "qty": 2
+        },
+        {
+          "barang_id": "B0003",
+          "nama_barang": "Minyak Goreng 1L",
+          "harga_barang": 8000,
+          "qty": 1
+        }
+      ]
+    }
+  ]
+}
