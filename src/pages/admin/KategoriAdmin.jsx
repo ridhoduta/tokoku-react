@@ -5,8 +5,9 @@ import {
   updateKategori,
   deleteKategori,
 } from "../../api/kategoriApi";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Search } from "lucide-react";
 import KategoriItem from "../../component/KategoriComponent/KategoriItem";
+import TableLoader from "../../component/Loader/TableLoader";
 // import { button } from "@/components/ui/button";
 
 const KategoriAdmin = () => {
@@ -16,13 +17,19 @@ const KategoriAdmin = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({ nama_kategori: "" });
   const [selectedId, setSelectedId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredKategori = kategoriList.filter((kategori) => {
+    console.log(kategori);
+    const term = searchTerm.toLowerCase();
+    return kategori.nama_kategori?.toLowerCase().includes(term);
+  });
 
   // ambil semua kategori
   const fetchKategori = async () => {
     try {
       setLoading(true);
       const res = await getKategori();
-    //   console.log("Response getKategori:", res);
+      //   console.log("Response getKategori:", res);
 
       if (res && res.success) {
         const formatted = (res.data || []).map((item) => ({
@@ -102,43 +109,72 @@ const KategoriAdmin = () => {
     setEditMode(false);
     setShowModal(true);
   };
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-
 
   return (
-    <div className="p-6  min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Manajemen Kategori</h1>
-        <button onClick={openTambahModal} className="flex items-center gap-2">
-          <Plus size={18} /> Tambah Kategori
-        </button>
-      </div>
-
-      
-        <div className="bg-white shadow-md rounded-xl overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-gray-100 text-gray-700">
-              <tr>
-                <th className="py-3 px-4">No</th>
-                <th className="py-3 px-4">Nama Kategori</th>
-                <th className="py-3 px-4 text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {kategoriList.map((kategori, index) => (
-                <KategoriItem  key={index} kategori={kategori} index={index} openEditModal={openEditModal}  />
-              ))}
-            </tbody>
-          </table>
+    <div className="min-h-screen">
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Manajemen Kategori
+            </h2>
+            <p className="text-gray-500 text-sm">Kelola Kategori Barang Anda</p>
+          </div>
+          <button
+            onClick={openTambahModal}
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 flex items-center gap-2"
+          >
+            + Tambah Kategori
+          </button>
         </div>
-    
+      </div>
+      <div className="bg-white rounded-lg shadow p-6">
+        {/* Search Bar */}
+        <div className="relative mb-1">
+          <input
+            type="text"
+            placeholder="Cari Kategori..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 pr-12 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-gray-700 placeholder-gray-400"
+          />
+          <button className="absolute right-2 top-1/2 -translate-y-8 bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition">
+            <Search className="w-5 h-5" />
+          </button>
+          <div className="text-sm text-gray-500 mt-2">
+          Menampilkan {filteredKategori.length} dari {kategoriList.length} kategori
+        </div>
+        </div>
+      </div>
+      <div className="bg-white shadow-md rounded-xl overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="py-3 px-4">No</th>
+              <th className="py-3 px-4">Nama Kategori</th>
+              <th className="py-3 px-4 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="7">
+                  <TableLoader />
+                </td>
+              </tr>
+            ) : (
+              filteredKategori.map((kategori, index) => (
+                <KategoriItem
+                  key={index}
+                  kategori={kategori}
+                  index={index}
+                  openEditModal={openEditModal}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Modal Tambah/Edit */}
       {showModal && (

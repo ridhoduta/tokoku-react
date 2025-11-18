@@ -83,13 +83,6 @@ const BarangAdmin = () => {
     setBarang(barang)
     setIsModalEditOpen(true)
   }
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -144,6 +137,7 @@ const BarangAdmin = () => {
         products={products}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        loading={loading}
       />
       <TambahModalBarang
         isOpen={isModalOpen}

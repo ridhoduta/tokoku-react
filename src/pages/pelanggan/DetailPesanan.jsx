@@ -1,60 +1,87 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Package, Calendar, MapPin } from "lucide-react";
-import { getPesananById } from "../../api/pesananApi";
+import { Package, Calendar, MapPin, Truck, Wallet2Icon } from "lucide-react";
+import { bayarPesanan } from "../../api/pesananApi";
+import DootsLoader from "../../component/Loader/DootsLoader";
 
-const DetailPesanan = () => {
-  const location = useLocation();
+export default function DetailPesanan() {
   const navigate = useNavigate();
-  const { pesananId } = location.state || {};
+  const location = useLocation();
+  const { order } = location.state || {};
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const snapScript = document.createElement("script");
+    snapScript.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    snapScript.setAttribute("data-client-key", "YOUR_CLIENT_KEY");
+    snapScript.async = true;
+    document.body.appendChild(snapScript);
+    return () => document.body.removeChild(snapScript);
+  }, []);
 
-  const [pesanan, setPesanan] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  if (!order) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-600">
+        Tidak ada data pesanan. Silakan kembali.
+      </div>
+    );
+  }
 
   const onBack = () => navigate("/pelanggan/pesanan-list");
 
-  useEffect(() => {
-    const fetchPesanan = async () => {
-      if (!pesananId) {
-        alert("ID pesanan tidak ditemukan!");
-        navigate("/pelanggan/keranjang");
-        return;
-      }
+  const statusColors = {
+    menunggu: "bg-blue-100 text-blue-700",
+    dikirim: "bg-orange-100 text-orange-700",
+    selesai: "bg-green-100 text-green-700",
+    dibatalkan: "bg-red-100 text-red-700",
+    dibayar: "bg-yellow-100 text-yellow-700",
+    "belum dibayar": "bg-red-100 text-red-700",
+  };
 
-      try {
-        setIsLoading(true);
-        const res = await getPesananById(pesananId);
-        if (res.success) {
-          setPesanan(res.data);
-        } else {
-          alert(res.message || "Gagal memuat data pesanan");
+  // Handle pembayaran
+  const handleBayarSekarang = async () => {
+    setLoading(true);
+    try {
+      const data = {
+        pesananId: order.id,
+        nama_pemesan: order.nama_pemesan,
+        tanggal: order.tanggal,
+        pengiriman: order.pengiriman,
+      };
+
+      const res = await bayarPesanan(data);
+      console.log("Midtrans Response:", res);
+
+      if (res.success && res.snapToken) {
+        if (!window.snap) {
+          alert("Snap belum dimuat!");
+          return;
         }
-      } catch (error) {
-        console.error(error);
-        alert("Terjadi kesalahan saat mengambil data pesanan");
-      } finally {
-        setIsLoading(false);
+
+        window.snap.pay(res.snapToken, {
+          onSuccess: () => alert("Pembayaran Berhasil!"),
+          onPending: () => alert("Menunggu Pembayaran..."),
+          onError: () => alert("Pembayaran Gagal"),
+          onClose: () => alert("Kamu menutup halaman pembayaran"),
+        });
+      } else {
+        alert("Gagal mendapatkan Snap Token");
       }
-    };
-
-    fetchPesanan();
-  }, [pesananId, navigate]);
-
-  if (isLoading) {
+      // setLoading(true);
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat memproses pembayaran");
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen text-gray-600">
-        Memuat detail pesanan...
+      <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+        <DootsLoader />
       </div>
     );
   }
-
-  if (!pesanan) {
-    return (
-      <div className="flex items-center justify-center h-screen text-gray-600">
-        Data pesanan tidak ditemukan.
-      </div>
-    );
-  }
+  // Load Midtrans Snap
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -67,142 +94,146 @@ const DetailPesanan = () => {
           >
             ← Kembali
           </button>
+
           <h1 className="text-2xl font-bold mb-2">Detail Pesanan</h1>
+
           <div className="flex items-center gap-4 text-sm">
             <span
               className={`px-3 py-1 rounded-full font-semibold ${
-                pesanan.status === "selesai"
-                  ? "bg-green-100 text-green-700"
-                  : pesanan.status === "menunggu"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "bg-blue-100 text-blue-700"
+                statusColors[order.status]
               }`}
             >
-              {pesanan.status}
+              {order.status}
             </span>
-            <span className="text-gray-600">
-              No Pesanan: {pesanan.id || pesanan.kode_pesanan}
+
+            <span
+              className={`px-3 py-1 rounded-full font-semibold ${
+                statusColors[order.status_pembayaran]
+              }`}
+            >
+              {order.status_pembayaran}
             </span>
+
+            <span className="text-gray-600">No Pesanan: {order.id}</span>
           </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Left Column - Order Details */}
+          {/* Left */}
           <div className="md:col-span-2 space-y-6">
-            {/* Shipping Info */}
+            {/* Info Pengiriman */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="font-semibold mb-4 flex items-center gap-2">
                 <Package className="w-5 h-5 text-purple-700" />
                 Informasi Pengiriman
               </h2>
+
               <div className="space-y-3 text-sm">
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-gray-600 mt-0.5" />
+                <div className="flex gap-3">
+                  <Calendar className="w-5 h-5 text-gray-600" />
                   <div>
-                    <p className="font-medium">Tanggal Pemesanan</p>
-                    <p className="text-gray-600">{pesanan.tanggal}</p>
+                    <p className="font-medium">Tanggal Pesanan</p>
+                    <p className="text-gray-600">{order.tanggal}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-gray-600 mt-0.5" />
+
+                <div className="flex gap-3">
+                  <MapPin className="w-5 h-5 text-gray-600" />
                   <div>
-                    <p className="font-medium">Alamat Pengiriman</p>
+                    <p className="font-medium">Alamat</p>
                     <p className="text-gray-600">
-                      {pesanan.nama_pemesan} - {pesanan.nomor_hp}
-                      <br />
-                      {pesanan.alamat}
+                      {order.nama_pemesan} <br />
+                      {order.alamat}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-gray-600 mt-0.5" />
+
+                <div className="flex gap-3">
+                  <Truck className="w-5 h-5 text-gray-600" />
                   <div>
-                    <p className="font-medium">Metode Pengiriman</p>
-                    <p className="text-gray-600">{pesanan.pengiriman}</p>
+                    <p className="font-medium">Pengiriman</p>
+                    <p className="text-gray-600">{order.pengiriman}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-gray-600 mt-0.5" />
+
+                <div className="flex gap-3">
+                  <Wallet2Icon className="w-5 h-5 text-gray-600" />
                   <div>
-                    <p className="font-medium">Metode Pembayaran</p>
-                    <p className="text-gray-600">{pesanan.pembayaran}</p>
+                    <p className="font-medium">Pembayaran</p>
+                    <p className="text-gray-600">{order.pembayaran}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Product Details */}
+            {/* Produk */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="font-semibold mb-4">Detail Produk</h2>
-              {pesanan.barang_dipesan?.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 p-4 border rounded-lg mb-3"
-                >
-                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-lg flex items-center justify-center flex-shrink-0">
+
+              {order.barang_dipesan.map((product, idx) => (
+                <div key={idx} className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
                     <img
-                      src={item.gambar_barang}
-                      alt={item.nama_barang}
-                      className="w-20 h-20 object-cover rounded-lg border"
+                      src={product.gambar_barang}
+                      className="w-full h-full object-cover"
                       onError={(e) =>
                         (e.target.src =
                           "https://via.placeholder.com/80?text=No+Image")
-                      } // fallback jika gambar rusak
+                      }
                     />
                   </div>
 
                   <div className="flex-1">
-                    <h3 className="font-semibold mb-1">{item.nama_barang}</h3>
-                    <p className="font-bold text-gray-800">
-                      Rp {item.harga_barang.toLocaleString("id-ID")}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Jumlah: {item.qty}
+                    <h3 className="font-semibold">{product.nama_barang}</h3>
+                    <p className="text-sm text-gray-600">
+                      Jumlah: {product.qty}
                     </p>
                   </div>
 
-                  <div className="text-right font-bold">
-                    Rp {(item.harga_barang * item.qty).toLocaleString("id-ID")}
-                  </div>
+                  <p className="font-bold">
+                    Rp {product.harga_barang.toLocaleString("id-ID")}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right Column - Payment Summary */}
+          {/* Right */}
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="font-semibold mb-4">Ringkasan Pembayaran</h2>
-              <div className="space-y-3 mb-4 pb-4 border-b">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>Rp {pesanan.total_harga.toLocaleString("id-ID")}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Diskon</span>
-                  <span className="text-green-600">Rp 0</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Ongkir</span>
-                  <span>Rp 0</span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-bold">Total</span>
-                <span className="text-xl font-bold text-purple-700">
-                  Rp {pesanan.total_harga.toLocaleString("id-ID")}
+
+              <div className="flex justify-between text-sm pb-4 border-b">
+                <span>Total</span>
+                <span className="font-bold text-purple-700">
+                  Rp {order.total_harga.toLocaleString("id-ID")}
                 </span>
               </div>
-            </div>
 
-            <button className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition-colors">
-              Hubungi Penjual
-            </button>
+              {/* Tombol Bayar */}
+              {order.pembayaran === "transfer" &&
+                order.status_pembayaran !== "dibayar" &&
+                order.status === "menunggu" && (
+                  <button
+                    onClick={handleBayarSekarang}
+                    className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg mt-4"
+                  >
+                    Bayar Sekarang
+                  </button>
+                )}
+
+              {order.status_pembayaran === "dibayar" && (
+                <button
+                  className="w-full bg-gray-400 text-white py-3 rounded-lg mt-4"
+                  disabled
+                >
+                  Anda sudah membayar
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default DetailPesanan;
+}

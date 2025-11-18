@@ -1,11 +1,28 @@
 import { useEffect, useState } from "react";
 import BarangpList from "../../component/BarangPelanggan/BarangpList";
 import { getBarang } from "../../api/barangApi";
+import DootsLoader from "../../component/Loader/DootsLoader";
+import { useCart } from "../../component/BarangPelanggan/CartContext";
+import { CheckCircle, CloudSun, X } from "lucide-react";
 
 export default function HomePelanggan() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const setAlert = () => {
+    setShowAlert(true);
+
+    // otomatis hilang setelah 2 detik (opsional)
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000);
+  };
+
+  const closeAlert = () => {
+    setShowAlert(false);
+  };
+
 
   const fetchBarang = async () => {
     try {
@@ -23,7 +40,7 @@ export default function HomePelanggan() {
         category: item.data?.kategori_id || "-",
         price: Number(item.data?.harga_barang) || 0,
         stock: Number(item.data?.stok_barang) || 0,
-        gambar : item.data?.gambar_barang
+        gambar: item.data?.gambar_barang
       }))
 
       setProducts(formattedProducts);
@@ -35,6 +52,7 @@ export default function HomePelanggan() {
     }
   };
 
+
   useEffect(() => {
     fetchBarang();
   }, []);
@@ -44,13 +62,12 @@ export default function HomePelanggan() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold mb-6">Produk Rekomendasi</h2>
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <span className="ml-3 text-gray-600">Memuat produk...</span>
+          <DootsLoader />
         </div>
+        <p className="flex justify-center ml-3 text-gray-600">Memuat produk...</p>
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -69,10 +86,25 @@ export default function HomePelanggan() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="relative max-w-7xl mx-auto px-4 py-8">
+
+      {/* 🔥 Alert muncul di atas, tanpa menghapus halaman */}
+      {showAlert && (
+        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 
+          bg-green-600 text-white text-sm px-5 py-2 rounded-full shadow-lg 
+          flex items-center gap-2 animate-fadeInOut z-20">
+          <CheckCircle className="w-4 h-4" />
+          <span>Berhasil ditambahkan ke keranjang!</span>
+          <button onClick={closeAlert} className="ml-3 font-bold bg-green-600">
+            <X/>
+          </button>
+        </div>
+      )}
+
       <h2 className="text-2xl font-bold mb-6">Produk Rekomendasi</h2>
+
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        <BarangpList products={products} />
+        <BarangpList products={products} setAlert={setAlert} />
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import PesananItem from "./PesananItem";
 import { Search } from "lucide-react";
+import TableLoader from "../Loader/TableLoader";
 
-const PesananList = ({ pesanans, onEdit, onDelete, onUpdateStatus }) => {
+const PesananList = ({ pesanans, onEdit, onDelete, onUpdateStatus, loading }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Filter data berdasarkan pencarian
@@ -69,15 +70,24 @@ const PesananList = ({ pesanans, onEdit, onDelete, onUpdateStatus }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredPesanans.map((pesanan) => (
-                <PesananItem
-                  key={pesanan.id}
-                  pesanan={pesanan}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onUpdateStatus={onUpdateStatus}
-                />
-              ))}
+              {loading ? (
+                <tr>
+                  <td colSpan="7">
+                    <TableLoader />
+                  </td>
+                </tr>
+              ) : (
+
+                filteredPesanans.map((pesanan) => (
+                  <PesananItem
+                    key={pesanan.id}
+                    pesanan={pesanan}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    onUpdateStatus={onUpdateStatus}
+                  />
+                ))
+              )}
             </tbody>
           </table>
         </div>

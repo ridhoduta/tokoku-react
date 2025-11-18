@@ -12,6 +12,8 @@ const Register = () => {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  
+  
 
   const handleChange = (e) => {
     setForm({
@@ -34,6 +36,13 @@ const Register = () => {
       setLoading(false);
     }
   };
+  if (loading) {
+      return (
+        <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+          <DootsLoader />
+        </div>
+      );
+    }
 
   return (
     <div className="w-full max-w-md space-y-6">
@@ -101,10 +110,9 @@ const Register = () => {
 
         <button
           type="submit"
-          disabled={loading}
           className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition duration-200"
         >
-          {loading ? "Mendaftar..." : "Daftar"}
+          Daftar
         </button>
 
         {message && (

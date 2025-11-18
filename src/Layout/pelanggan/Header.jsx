@@ -11,6 +11,7 @@ import {
 import { useCart } from "../../component/BarangPelanggan/CartContext";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../api/authApi";
+import { getBarang } from "../../api/barangApi";
 
 export default function Header() {
   const { cartItems } = useCart();
@@ -36,6 +37,33 @@ export default function Header() {
   const handlePesananSaya = () => {
     navigate("/pelanggan/pesanan-list");
     setOpenDropdown(false);
+  };
+  const fetchBarang = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await getBarang();
+      // console.log("Response dari API:", response.data);
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
+      const formattedProducts = data.map((item) => ({
+        id: item.id,
+        name: item.data?.nama_barang || "Tanpa Nama",
+        category: item.data?.kategori_id || "-",
+        price: Number(item.data?.harga_barang) || 0,
+        stock: Number(item.data?.stok_barang) || 0,
+        gambar: item.data?.gambar_barang
+      }))
+
+      setProducts(formattedProducts);
+    } catch (err) {
+      console.error("Error fetching barang:", err);
+      setError("Terjadi kesalahan saat mengambil data barang");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // const handleLogout = async () => {

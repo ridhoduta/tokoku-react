@@ -4,6 +4,7 @@ import { useCart } from "../../component/BarangPelanggan/CartContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createPesanan } from "../../api/pesananApi";
 import ModalPesanan from "../../component/modal/ModalPesanan";
+import DootsLoader from "../../component/Loader/DootsLoader";
 
 const RingkasanPesanan = () => {
   const { cartItems } = useCart();
@@ -17,7 +18,7 @@ const RingkasanPesanan = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalData, setModalData] = useState(null);
 
-  // 🔹 Tambahan state baru untuk radio button
+  
   const [pengiriman, setPengiriman] = useState("diantar");
   const [pembayaran, setPembayaran] = useState("transfer");
 
@@ -43,8 +44,7 @@ const RingkasanPesanan = () => {
 
     setIsLoading(true);
 
-    // Siapkan data sesuai API
-    const data = {
+    const dataPesanan = {
       nama_pemesan: nama,
       alamat: alamat,
       barang_dipesan: cartItems.map((item) => ({
@@ -52,7 +52,7 @@ const RingkasanPesanan = () => {
         nama_barang: item.name,
         harga_barang: item.price,
         qty: item.quantity,
-        gambar_barang : item.gambar
+        gambar_barang: "gambar barang",
       })),
       total_harga: total,
       status: "menunggu",
@@ -62,12 +62,13 @@ const RingkasanPesanan = () => {
     };
 
     try {
-      const res = await createPesanan(data);
+      const res = await createPesanan(dataPesanan);
       if (res.success) {
         setModalData({
           pesananId: res.data.id || "O-XXXXX",
           subtotal: total.toLocaleString("id-ID"),
-          tanggal: data.tanggal,
+          tanggal: dataPesanan.tanggal,
+          data: dataPesanan,
         });
       } else {
         alert(res.message || "Gagal membuat pesanan");
@@ -79,7 +80,15 @@ const RingkasanPesanan = () => {
       setIsLoading(false);
     }
   };
-  console.log(cartItems)
+  // console.log(cartItems)
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+        <DootsLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -90,7 +99,7 @@ const RingkasanPesanan = () => {
           tanggal={modalData.tanggal}
           onDetail={() =>
             navigate("/pelanggan/detail-pesanan", {
-              state: { pesananId: modalData.pesananId },
+              state: { order: modalData.data },
             })
           }
         />
@@ -113,7 +122,6 @@ const RingkasanPesanan = () => {
           </div>
 
           {/* 🚚 Informasi Pengiriman */}
-          
 
           {/* 🛒 Daftar Barang */}
           <div className="space-y-4">
@@ -128,11 +136,10 @@ const RingkasanPesanan = () => {
                   className="flex items-center gap-4 p-4 bg-white border rounded-lg"
                 >
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                     <img
-                          src={item.gambar}
-                          className="w-full h-full object-cover"
-                        />
-                      
+                    <img
+                      src={item.gambar}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
                   <div className="flex-1">
@@ -209,8 +216,8 @@ const RingkasanPesanan = () => {
             <div className="mt-4 flex items-start gap-3">
               <Clock className="w-5 h-5 text-gray-600 mt-0.5" />
               <span className="text-sm text-gray-600">
-                Maksimal 1 jam setelah pembayaran selama jam operasional
-                (07:00 - 21:00)
+                Maksimal 1 jam setelah pembayaran selama jam operasional (07:00
+                - 21:00)
               </span>
             </div>
           </div>
@@ -245,12 +252,9 @@ const RingkasanPesanan = () => {
 
           <button
             onClick={handleBayarSekarang}
-            disabled={isLoading}
-            className={`w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition-colors ${
-              isLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition-colors `}
           >
-            {isLoading ? "Memproses..." : "Buat Pesanan"}
+            Buat Pesanan
           </button>
         </div>
       </div>

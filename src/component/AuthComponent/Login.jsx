@@ -1,31 +1,48 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/authApi";
+import DootsLoader from "../../component/Loader/DootsLoader";
 
 const LoginPage = () => {
   const [nomor_hp, setNomorHp] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const res = await login({ nomor_hp, password });
+    try {
+      const res = await login({ nomor_hp, password });
 
-    if (res.success) {
-      const role = res.data.role_id;
-    
+      if (res.success) {
+        const role = res.data.role_id;
 
-      if (role === "R001") {
-        navigate("/admin/dashboard"); // Admin ke dashboard admin
-      } else if (role === "R002") {
-        navigate("/pelanggan/home"); // Pelanggan ke halaman user
+        if (role === "R001") {
+          navigate("/admin/dashboard");
+        } else if (role === "R002") {
+          navigate("/pelanggan/home");
+        }
+      } else {
+        setError(res.message);
       }
-    } else {
-      setError(res.message);
+    } catch (error) {
+      setError("Terjadi kesalahan saat login");
+    } finally {
+      setLoading(false);
     }
   };
+
+  // 🔥 Fullscreen loader
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+        <DootsLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md space-y-6">

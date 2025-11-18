@@ -13,12 +13,14 @@ import {
 import { getPesanan } from "../../api/pesananApi";
 import { useNavigate } from "react-router-dom";
 import { bayarPesanan } from "../../api/pesananApi";
+import DootsLoader from "../../component/Loader/DootsLoader";
 
 export default function OrderListPage() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading, setLoading] = useState(false)
 
   const nama = localStorage.getItem("nama");
   const navigate = useNavigate();
@@ -43,6 +45,7 @@ export default function OrderListPage() {
   // Ambil semua pesanan dari API dan filter sesuai nama user
   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true)
       try {
         const response = await getPesanan();
         if (response.success) {
@@ -53,6 +56,8 @@ export default function OrderListPage() {
         }
       } catch (err) {
         console.error("Gagal mengambil pesanan:", err);
+      }finally{
+        setLoading(false)
       }
     };
     if (nama) fetchOrders();
@@ -66,16 +71,20 @@ export default function OrderListPage() {
         : orders.filter((order) => order.status === selectedFilter);
     setFilteredOrders(filtered);
   }, [orders, selectedFilter]);
-
-  if (selectedOrder) {
-    return (
-      <OrderDetailView
-        order={selectedOrder}
-        onBack={() => setSelectedOrder(null)}
-      />
-    );
-  }
-  console.log(orders);
+  if (loading) {
+      return (
+        <>
+          <div className="flex justify-center items-center py-12">
+            <DootsLoader />
+          </div>
+          <p className="flex justify-center ml-3 text-gray-600">
+            Memuat Pesanan
+          </p>
+        </>
+        
+      );
+    }
+  // console.log(orders);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -123,12 +132,13 @@ export default function OrderListPage() {
             <p className="text-gray-500">Belum ada pesanan dengan status ini</p>
           </div>
         ) : (
+          
           <div className="space-y-4">
             {filteredOrders.map((order) => (
               <div
                 key={order.id}
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedOrder(order)}
+                onClick={() => navigate("/pelanggan/detail-pesanan", { state: { order } })}
               >
                 <div className="p-6">
                   {/* Order Header */}
@@ -211,235 +221,3 @@ export default function OrderListPage() {
   );
 }
 
-// Detail view bisa pakai struktur serupa, ganti properti sesuai API
-function OrderDetailView({ order, onBack }) {
-  const navigate = useNavigate();
-
-  const statusColors = {
-    menunggu: "bg-blue-100 text-blue-700",
-    dikirim: "bg-orange-100 text-orange-700",
-    selesai: "bg-green-100 text-green-700",
-    dibatalkan: "bg-red-100 text-red-700",
-    dibayar: "bg-yellow-100 text-yellow-700",
-    "belum dibayar": "bg-red-100 text-red-700",
-  };
-
-  // ==============================
-  // 🔹 Handler untuk tombol "Bayar Sekarang"
-  // ==============================
-  const handleBayarSekarang = async () => {
-    try {
-      const data = {
-        pesananId: order.id,
-        nama_pemesan: order.nama_pemesan,
-        tanggal: order.tanggal, // Format: YYYY-MM-DD
-        pengiriman: order.pengiriman,
-      };
-      // Kirim request ke backend untuk generate Snap Token
-      const res = await bayarPesanan(data);
-      console.log("✅ Respons dari backend:", res);
-      console.log(window.snap);
-      console.log(res.snapToken);
-
-      if (res.success && res.snapToken) {
-        // Pastikan Midtrans Snap sudah dimuat
-        if (!window.snap) {
-          alert("Midtrans Snap belum dimuat. Coba refresh halaman.");
-          return;
-        }
-
-        // 🔹 Buka popup pembayaran Midtrans
-        window.snap.pay(res.snapToken, {
-          onSuccess: function (result) {
-            alert("Pembayaran berhasil!");
-            console.log("Success:", result);
-          },
-          onPending: function (result) {
-            alert("Menunggu pembayaran...");
-            console.log("Pending:", result);
-          },
-          onError: function (result) {
-            alert("Terjadi kesalahan saat pembayaran.");
-            console.log("Error:", result);
-          },
-          onClose: function () {
-            alert("Kamu menutup halaman pembayaran sebelum selesai.");
-          },
-        });
-      } else {
-        alert(res.message || "Gagal memproses pembayaran.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Terjadi kesalahan koneksi ke server.");
-    }
-  };
-
-  // ==============================
-  // 🔹 Pastikan script Snap dimuat (hanya sekali)
-  // ==============================
-  React.useEffect(() => {
-    const snapScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
-    const clientKey = "YOUR_CLIENT_KEY"; // ganti dengan client key kamu dari Midtrans Dashboard
-
-    let scriptTag = document.createElement("script");
-    scriptTag.src = snapScriptUrl;
-    scriptTag.setAttribute("data-client-key", clientKey);
-    scriptTag.async = true;
-
-    document.body.appendChild(scriptTag);
-
-    return () => {
-      document.body.removeChild(scriptTag);
-    };
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <button
-            onClick={onBack}
-            className="text-purple-700 hover:text-purple-800 font-semibold mb-4 flex items-center gap-2"
-          >
-            ← Kembali ke Daftar Pesanan
-          </button>
-          <h1 className="text-2xl font-bold mb-2">Detail Pesanan</h1>
-          <div className="flex items-center gap-4 text-sm">
-            <span
-              className={`px-3 py-1 rounded-full font-semibold ${
-                statusColors[order.status]
-              }`}
-            >
-              {order.status}
-            </span>
-            <span
-              className={`px-3 py-1 rounded-full font-semibold ${
-                statusColors[order.status_pembayaran]
-              }`}
-            >
-              {order.status_pembayaran}
-            </span>
-            <span className="text-gray-600">No Pesanan: {order.id}</span>
-          </div>
-        </div>
-
-        {/* Info pengiriman dan produk */}
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="font-semibold mb-4 flex items-center gap-2">
-                <Package className="w-5 h-5 text-purple-700" />
-                Informasi Pengiriman
-              </h2>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-gray-600 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Tanggal Pesanan</p>
-                    <p className="text-gray-600">{order.tanggal}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-gray-600 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Alamat Pengiriman</p>
-                    <p className="text-gray-600">
-                      {order.nama_pemesan}
-                      <br />
-                      {order.alamat}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Truck className="w-5 h-5 text-gray-600 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Metode Pengiriman</p>
-                    <p className="text-gray-600">{order.pengiriman}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Wallet2Icon className="w-5 h-5 text-gray-600 mt-0.5" />
-                  <div>
-                    <p className="font-medium">Metode Pembayaran</p>
-                    <p className="text-gray-600">{order.pembayaran}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Detail Produk */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="font-semibold mb-4">Detail Produk</h2>
-              {order.barang_dipesan.map((product, idx) => (
-                <div key={idx} className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                    <img
-                      src={product.gambar_barang}
-                      alt={product.nama_barang}
-                      className="w-full h-full object-cover"
-                      onError={(e) =>
-                        (e.target.src =
-                          "https://via.placeholder.com/80?text=No+Image")
-                      }
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-sm mb-1">
-                      {product.nama_barang}
-                    </h3>
-                    <p className="text-xs text-gray-600">
-                      Jumlah: {product.qty}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold">
-                      Rp {product.harga_barang.toLocaleString("id-ID")}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Ringkasan Pembayaran */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="font-semibold mb-4">Ringkasan Pembayaran</h2>
-              <div className="space-y-3 mb-4 pb-4 border-b">
-                <div className="flex justify-between text-sm">
-                  <span>Total</span>
-                  <span className="font-bold text-purple-700">
-                    Rp {order.total_harga.toLocaleString("id-ID")}
-                  </span>
-                </div>
-              </div>
-
-              {/* 🔹 Tombol Bayar Sekarang muncul jika pembayaran = transfer */}
-              {order.pembayaran === "transfer" && (
-                <>
-                  {order.status_pembayaran === "dibayar" ? (
-                    <button
-                      disabled
-                      className="w-full bg-gray-400 text-white font-semibold py-3 rounded-lg cursor-not-allowed"
-                    >
-                      Anda sudah membayar
-                    </button>
-                  ) : order.status === "menunggu" ? (
-                    <button
-                      onClick={handleBayarSekarang}
-                      className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition-colors"
-                    >
-                      Bayar Sekarang
-                    </button>
-                  ) : null}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

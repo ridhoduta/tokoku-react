@@ -52,6 +52,29 @@
         font-family: "Inter", system-ui, sans-serif;
       }
     </style> -->
+    <style>
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -10px);
+          }
+          15% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+          85% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -10px);
+          }
+        }
+        .animate-fadeInOut {
+          animation: fadeInOut 2.5s ease-in-out;
+        }
+    </style>
     <script type="module" src="/src/main.jsx"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script

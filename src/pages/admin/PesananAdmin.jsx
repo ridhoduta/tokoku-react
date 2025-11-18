@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { getPesanan, updatePesanan, deletePesanan, updatePengiriman } from "../../api/pesananApi";
+import PesananItem from "../../component/pesanan/PesananItem";
 import PesananList from "../../component/pesanan/PesananList";
-import { deletePesanan, getPesanan, updatePesanan } from "../../api/pesananApi";
 
 
 const PesananAdmin = () => {
@@ -32,13 +33,36 @@ const PesananAdmin = () => {
     try {
       const res = await updatePesanan(id, updatedData);
       if (res.success === false) throw new Error(res.message || "Gagal update pesanan");
-      // Update di state lokal tanpa reload
+
+      // update langsung di state
       setPesanans((prev) =>
         prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item))
       );
     } catch (err) {
       console.error("Error update pesanan:", err);
       alert("Gagal mengedit pesanan: " + err.message);
+    }
+  };
+
+  // ================================
+  // 🔹 Update field pengiriman
+  // ================================
+  const handleUpdatePengiriman = async (id, newPengiriman) => {
+    try {
+      const res = await updatePengiriman(id, newPengiriman);
+      if (res.success) {
+        // update di state utama
+        setPesanans((prev) =>
+          prev.map((p) =>
+            p.id === id ? { ...p, pengiriman: newPengiriman } : p
+          )
+        );
+      } else {
+        alert(res.message || "Gagal memperbarui pengiriman");
+      }
+    } catch (err) {
+      console.error("Error update pengiriman:", err);
+      alert("Terjadi kesalahan saat update pengiriman");
     }
   };
 
@@ -73,13 +97,7 @@ const PesananAdmin = () => {
   // ================================
   // 🔹 UI Kondisi Loading & Error
   // ================================
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
+
 
   if (error) {
     return (
@@ -90,51 +108,36 @@ const PesananAdmin = () => {
   }
 
   // ================================
-  // 🔹 Tampilan utama
+  // 🔹 Tampilkan Daftar Pesanan
   // ================================
   return (
-    <>
+    <div className="min-h-screen">
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Manajemen Pesanan</h2>
-            <p className="text-gray-500 text-sm">
-              Kelola Semua pesanan pelanggan
-            </p>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Manajemen Pesanan
+            </h2>
+            <p className="text-gray-500 text-sm">Kelola Pesanan di Toko anda</p>
           </div>
         </div>
       </div>
+      <div className="bg-white shadow-md rounded-xl overflow-hidden">
 
-      {/* Statistik */}
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
-          <p className="text-gray-500 text-sm mb-1">Total Pesanan</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">
-            {pesanans.length}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
-          <p className="text-gray-500 text-sm mb-1">Pesanan Selesai</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">
-            {pesanans.filter((p) => p.status === "selesai").length}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
-          <p className="text-gray-500 text-sm mb-1">Dalam Proses</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">
-            {pesanans.filter((p) => p.status === "proses").length}
-          </p>
-        </div>
+
+        <PesananList
+          key={pesanans.id}
+          pesanans={pesanans}
+          onDelete={handleDelete}
+          onUpdateStatus={updateStatusPesanan}
+          onUpdatePengiriman={handleUpdatePengiriman}
+          loading={loading} // ✅ kirim ke child
+        />
+
+
+
       </div>
-
-      {/* List Pesanan */}
-      <PesananList
-        pesanans={pesanans}
-        onEdit={editPesanan}
-        onDelete={handleDelete}
-        onUpdateStatus={updateStatusPesanan}
-      />
-    </>
+    </div>
   );
 };
 

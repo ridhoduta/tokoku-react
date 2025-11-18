@@ -103,3 +103,28 @@ export const bayarPesanan = async ({ pesananId, nama_pemesan, tanggal, pengirima
     return error.response?.data || { success: false, message: "Error bayarPesanan" };
   }
 };
+export const updatePengiriman = async (id, pengiriman) => {
+  try {
+    const res = await api.put(`/pesanan/pengiriman/${id}`, { pengiriman });
+    return res.data;
+  } catch (error) {
+    console.error("Gagal memperbarui pengiriman pesanan:", error);
+    return (
+      error.response?.data || {
+        success: false,
+        message: "Terjadi kesalahan saat update pengiriman",
+      }
+    );
+  }
+};
+export const getLaporan = async () => {
+  try {
+    const res = await api.get("/laporan"); // Pastikan endpoint Laravel /laporan tersedia
+    return res.data;
+  } catch (error) {
+    console.error("Gagal mengambil data laporan:", error);
+    return (
+      error.response?.data || { success: false, message: "Error getLaporan" }
+    );
+  }
+};

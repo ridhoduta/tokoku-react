@@ -12,6 +12,8 @@ import RingkasanPesanan from "./pages/pelanggan/RingkasanPesanan";
 import DetailPesanan from "./pages/pelanggan/DetailPesanan";
 import OrderListPage from "./pages/pelanggan/OrderListPage";
 import KategoriAdmin from "./pages/admin/KategoriAdmin";
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
+import LaporanPesanan from "./pages/admin/laporan/LaporanPesanan";
 
 
 function App() {
@@ -30,10 +32,11 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<h1>Dashboard Admin</h1>} />
+          <Route path="dashboard" element={<DashboardAdmin/>} />
           <Route path="barang" element={<BarangAdmin />} />
           <Route path="pesanan" element={<PesananAdmin />} />
           <Route path="kategori" element={<KategoriAdmin />} />
+          <Route path="laporan/pesanan" element={<LaporanPesanan />} />
         </Route>
 
         {/* Halaman Pelanggan (R002 & R001 sama-sama bisa) */}

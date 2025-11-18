@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import BarangItem from "./BarangItem";
 import { Search } from "lucide-react";
+import TableLoader from "../Loader/TableLoader";
 
-const BarangList = ({ products, onDelete, onEdit, onOpen }) => {
+const BarangList = ({ products, onDelete, onEdit, onOpen, loading }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const filteredBarang = products.filter((product) => {
+    console.log(product)
+    const term = searchTerm.toLowerCase();
+    return (
+      product.data.nama_barang?.toLowerCase().includes(term)
+    );
+  });
   // console.log(products)
   return (
     <>
@@ -17,9 +25,12 @@ const BarangList = ({ products, onDelete, onEdit, onOpen }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 pr-12 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-gray-700 placeholder-gray-400"
           />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition">
+          <button className="absolute right-2 top-1/2 -translate-y-8 bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition">
             <Search className="w-5 h-5" />
           </button>
+          <div className="text-sm text-gray-500 mt-2">
+          Menampilkan {filteredBarang.length} dari {products.length} barang
+        </div>
         </div>
       </div>
       <div className="bg-white rounded-lg shadow p-4">
@@ -51,9 +62,20 @@ const BarangList = ({ products, onDelete, onEdit, onOpen }) => {
               </tr>
             </thead>
             <tbody>
-              {products.map((item, index) => (
-                <BarangItem onDelete={onDelete} key={index} product={item} index={index} onEdit = {onEdit} onOpen={onOpen}/>
-              ))}
+              {loading ? (
+                <tr>
+                  <td colSpan="7">
+                    <TableLoader />
+                  </td>
+                </tr>
+              ) : (
+
+                filteredBarang.map((item, index) => (
+                  <BarangItem onDelete={onDelete} key={index} product={item} index={index} onEdit={onEdit} onOpen={onOpen} />
+                ))
+
+
+              )}
             </tbody>
           </table>
         </div>

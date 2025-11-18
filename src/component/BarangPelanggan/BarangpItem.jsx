@@ -3,41 +3,30 @@ import {
   Package,
   Star,
   ShoppingCart,
-  Loader2,
-  CheckCircle,
 } from "lucide-react";
+import DootsLoader from "../Loader/DootsLoader";
 import { useCart } from "./CartContext";
 
-const BarangpItem = ({ product }) => {
+
+const BarangpItem = ({ product , setAlert}) => {
   const { addToCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  // console.log(product)
 
   const handleAddToCart = async () => {
-    setIsLoading(true);
-
-    // Simulasi delay proses menambahkan ke keranjang
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    addToCart(product);
-    setIsLoading(false);
-    setShowAlert(true);
-
-    // Notifikasi otomatis hilang setelah 2,5 detik
-    setTimeout(() => setShowAlert(false), 2500);
-  };
-
+      setIsLoading(true);
+  
+      // Simulasi delay proses menambahkan ke keranjang
+      await new Promise((resolve) => setTimeout(resolve, 800));
+  
+      addToCart(product);
+      setIsLoading(false);
+      setAlert();
+  
+      // Notifikasi otomatis hilang setelah 2,5 detik
+      setTimeout(() => setShowAlert(false), 2500);
+    };
   return (
     <div className="relative bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-200 border border-gray-100 flex flex-col">
-      {/* Alert / Notifikasi */}
-      {showAlert && (
-        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-sm px-4 py-2 rounded-full shadow-md flex items-center gap-2 animate-fadeInOut z-20">
-          <CheckCircle className="w-4 h-4" />
-          <span>Berhasil ditambahkan ke keranjang!</span>
-        </div>
-      )}
-
       {/* Product Image */}
       {/* Product Image */}
       <div className="relative bg-white h-48 flex items-center justify-center overflow-hidden">
@@ -92,7 +81,7 @@ const BarangpItem = ({ product }) => {
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <DootsLoader/>
               Menambahkan...
             </>
           ) : (
@@ -103,31 +92,6 @@ const BarangpItem = ({ product }) => {
           )}
         </button>
       </div>
-
-      {/* Animasi fade untuk alert */}
-      <style jsx>{`
-        @keyframes fadeInOut {
-          0% {
-            opacity: 0;
-            transform: translate(-50%, -10px);
-          }
-          15% {
-            opacity: 1;
-            transform: translate(-50%, 0);
-          }
-          85% {
-            opacity: 1;
-            transform: translate(-50%, 0);
-          }
-          100% {
-            opacity: 0;
-            transform: translate(-50%, -10px);
-          }
-        }
-        .animate-fadeInOut {
-          animation: fadeInOut 2.5s ease-in-out;
-        }
-      `}</style>
     </div>
   );
 };
