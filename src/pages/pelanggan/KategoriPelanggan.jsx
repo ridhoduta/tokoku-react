@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import BarangpList from "../../component/BarangPelanggan/BarangpList";
-import { getBarang } from "../../api/barangApi";
+import { getBarangByKategori } from "../../api/barangApi";
 import DootsLoader from "../../component/Loader/DootsLoader";
-import { useCart } from "../../component/BarangPelanggan/CartContext";
-import { CheckCircle, CloudSun, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { CheckCircle, X } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export default function HomePelanggan() {
+export default function KategoriPelanggan() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
+  const { state } = useLocation();
   const setAlert = () => {
     setShowAlert(true);
 
@@ -24,52 +24,50 @@ export default function HomePelanggan() {
   const closeAlert = () => {
     setShowAlert(false);
   };
+  const kategori_id = state?.kategori_id;
+  const kategori_nama = state?.nama_kategori;
 
   const fetchBarang = async () => {
     try {
       setLoading(true);
-      setError(null);
 
-      const response = await getBarang();
-      const data = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data || [];
+      const res = await getBarangByKategori(kategori_id);
 
-      const formattedProducts = data
-        .map((item) => ({
-          id: item.id,
-          name: item.data?.nama_barang || "Tanpa Nama",
-          category: item.data?.kategori_id || "-",
-          price: Number(item.data?.harga_barang) || 0,
-          stock: Number(item.data?.stok_barang) || 0,
-          gambar: item.data?.gambar_barang,
-        }))
-        // 🔥 Urutkan dari yang terbaru
-        .sort((a, b) => b.id - a.id);
+      const data = Array.isArray(res.data) ? res.data : [];
 
-      setProducts(formattedProducts);
+      const formatted = data.map((item) => ({
+        id: item.id,
+        name: item.data.nama_barang,
+        category: item.data.kategori_id,
+        price: Number(item.data.harga_barang),
+        stock: Number(item.data.stok_barang),
+        gambar: item.data.gambar_barang,
+      }));
+
+      setProducts(formatted);
     } catch (err) {
-      console.error("Error fetching barang:", err);
-      setError("Terjadi kesalahan saat mengambil data barang");
+      setError("Gagal mengambil barang berdasarkan kategori");
     } finally {
       setLoading(false);
     }
   };
 
+//   console.log(products);
+
   const goToDetail = (product) => {
     navigate("/pelanggan/detail-barang", {
-      state: { product }, // ⬅ kirim data formatted product
+      state: { product }
     });
   };
 
   useEffect(() => {
     fetchBarang();
-  }, []);
+  }, [kategori_id]);
 
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6">Produk Rekomendasi</h2>
+        <h2 className="text-2xl font-bold mb-6">Kategori</h2>
         <div className="flex justify-center items-center py-12">
           <DootsLoader />
         </div>
@@ -82,7 +80,7 @@ export default function HomePelanggan() {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6">Produk Rekomendasi</h2>
+        <h2 className="text-2xl font-bold mb-6">{kategori_nama}</h2>
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           <p>{error}</p>
           <button
@@ -91,6 +89,16 @@ export default function HomePelanggan() {
           >
             Coba Lagi
           </button>
+        </div>
+      </div>
+    );
+  }
+  if (products <= 0) {
+    return (
+      <div className="max-w-7xl mx-auto my-10 px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">{kategori_nama}</h2>
+        <div className="bg-purple-100 border border-purple-400 text-purple-700 px-4 py-3 rounded">
+          <p>Barang dengan kategori {kategori_nama} kosong</p>
         </div>
       </div>
     );
@@ -113,7 +121,7 @@ export default function HomePelanggan() {
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mb-6">Daftar Produk</h2>
+      <h2 className="text-2xl font-bold mb-6">Kategori {kategori_nama}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
         <BarangpList

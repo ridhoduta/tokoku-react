@@ -14,6 +14,9 @@ import OrderListPage from "./pages/pelanggan/OrderListPage";
 import KategoriAdmin from "./pages/admin/KategoriAdmin";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import LaporanPesanan from "./pages/admin/laporan/LaporanPesanan";
+import DetailBarang from "./pages/pelanggan/DetailBarang";
+import KategoriPelanggan from "./pages/pelanggan/KategoriPelanggan";
+import SearchPelanggan from "./pages/pelanggan/SearchPelanggan";
 
 
 function App() {
@@ -54,6 +57,9 @@ function App() {
           <Route path="ringkasan-pesanan" element={<RingkasanPesanan />} />
           <Route path="detail-pesanan" element={<DetailPesanan />} />
           <Route path="pesanan-list" element={<OrderListPage/>} />
+          <Route path="detail-barang" element={<DetailBarang/>} />
+          <Route path="kategori" element={<KategoriPelanggan/>} />
+          <Route path="search" element={<SearchPelanggan/>} />
           {/* Tambahkan route lain di sini */}
           {/* <Route path="profile" element={<ProfilePelanggan />} />
           <Route path="cart" element={<CartPelanggan />} /> */}

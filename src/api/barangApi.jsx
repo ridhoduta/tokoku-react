@@ -1,4 +1,5 @@
 // src/api/barangApi.jsx
+import { data } from "react-router-dom";
 import api from "./axiosInstance";
 
 // GET semua barang (R001, R002)
@@ -20,6 +21,16 @@ export const getBarangById = async (id) => {
   } catch (err) {
     return (
       err.response?.data || { success: false, message: "Error getBarangById" }
+    );
+  }
+};
+export const getBarangByKategori = async (kategori_id) => {
+  try {
+    const res = await api.get(`/barang/kategori/${kategori_id}`);
+    return res;
+  } catch (error) {
+    return (
+      error.response?.data || { success: false, message: "Error getBarang by kategori" }
     );
   }
 };

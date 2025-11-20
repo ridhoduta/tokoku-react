@@ -11,13 +11,15 @@ import {
 import { useCart } from "../../component/BarangPelanggan/CartContext";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../api/authApi";
-import { getBarang } from "../../api/barangApi";
+import { getKategori } from "../../api/kategoriApi";
 
 export default function Header() {
   const { cartItems } = useCart();
   const navigate = useNavigate();
   const nama = localStorage.getItem("nama");
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const [openKategori, setOpenKategori] = useState(false);
+  const [kategoriList, setKategoriList] = useState([]);
 
   // dropdown
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -30,6 +32,23 @@ export default function Header() {
         setOpenDropdown(false);
       }
     };
+    const fetchKategori = async () => {
+      try {
+        const res = await getKategori();
+        const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
+
+        const formatted = data.map((item) => ({
+          id: item.id,
+          nama: item.data.nama_kategori,
+        }));
+
+        setKategoriList(formatted);
+      } catch (err) {
+        console.error("Gagal get kategori", err);
+      }
+    };
+
+    fetchKategori();
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -38,38 +57,19 @@ export default function Header() {
     navigate("/pelanggan/pesanan-list");
     setOpenDropdown(false);
   };
-  const fetchBarang = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await getBarang();
-      // console.log("Response dari API:", response.data);
-      const data = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data || [];
-      const formattedProducts = data.map((item) => ({
-        id: item.id,
-        name: item.data?.nama_barang || "Tanpa Nama",
-        category: item.data?.kategori_id || "-",
-        price: Number(item.data?.harga_barang) || 0,
-        stock: Number(item.data?.stok_barang) || 0,
-        gambar: item.data?.gambar_barang
-      }))
-
-      setProducts(formattedProducts);
-    } catch (err) {
-      console.error("Error fetching barang:", err);
-      setError("Terjadi kesalahan saat mengambil data barang");
-    } finally {
-      setLoading(false);
-    }
+  const handleOpenKategori = () => {
+    setOpenKategori(!openKategori);
   };
+  const [keyword, setKeyword] = useState("");
+  const handleSearch = (e) => {
+    e.preventDefault();
 
-  // const handleLogout = async () => {
-  //   await logout();
-  //   setOpenDropdown(false);
-  // };
+    if (keyword.trim() === "") return;
+
+    navigate("/pelanggan/search", {
+      state: { keyword },
+    });
+  };
 
   return (
     <header className="bg-white shadow-sm relative z-50">
@@ -77,34 +77,74 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* 🛍️ Logo dan Navigasi */}
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/pelanggan/home")}>
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => navigate("/pelanggan/home")}
+            >
               <div className="w-8 h-8 bg-purple-700 rounded flex items-center justify-center">
                 <Package className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-purple-700">TOKOKU</span>
             </div>
 
-            <nav className="flex items-center gap-6">
-              <button className="flex items-center gap-2 text-gray-700 hover:text-purple-700">
-                <BarChart2 />
-                <span className="text-sm font-medium">KATEGORI</span>
-              </button>
+            <nav className="flex items-center gap-6 relative">
+              <div
+                className="relative"
+                onClick={handleOpenKategori}
+                onMouseLeave={() => setOpenKategori(false)}
+              >
+                <button className="flex items-center gap-2 text-gray-700 hover:text-purple-700">
+                  <BarChart2 />
+                  <span className="text-sm font-medium">KATEGORI</span>
+                </button>
+
+                {openKategori && (
+                  <div className="absolute left-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 animate-fadeIn">
+                    {kategoriList.length === 0 ? (
+                      <p className="p-3 text-sm text-gray-500">Memuat...</p>
+                    ) : (
+                      kategoriList.map((kat) => (
+                        <button
+                          key={kat.id}
+                          onClick={() =>
+                            navigate("/pelanggan/kategori", {
+                              state: {
+                                kategori_id: kat.id,
+                                nama_kategori: kat.nama,
+                              },
+                            })
+                          }
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+                        >
+                          {kat.nama}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
             </nav>
           </div>
 
           {/* 🔍 Search Bar */}
-          <div className="flex-1 max-w-xl mx-8">
+          <form onSubmit={handleSearch}>
             <div className="relative">
               <input
                 type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
                 placeholder="Cari produk favorit kamu..."
                 className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-700"
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple-700 p-2 rounded-lg hover:bg-purple-800">
+
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple-700 p-2 rounded-lg hover:bg-purple-800"
+              >
                 <Search className="w-4 h-4 text-white" />
               </button>
             </div>
-          </div>
+          </form>
 
           {/* 🧭 Icons */}
           <div className="flex items-center gap-4 relative">
