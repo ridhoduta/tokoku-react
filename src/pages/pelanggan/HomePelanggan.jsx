@@ -36,14 +36,37 @@ export default function HomePelanggan() {
         : response.data?.data || [];
 
       const formattedProducts = data
-        .map((item) => ({
-          id: item.id,
-          name: item.data?.nama_barang || "Tanpa Nama",
-          category: item.data?.kategori_id || "-",
-          price: Number(item.data?.harga_barang) || 0,
-          stock: Number(item.data?.stok_barang) || 0,
-          gambar: item.data?.gambar_barang,
-        }))
+        .map((item) => {
+          const d = item.data || {};
+
+          return {
+            id: item.id || d.barang_id,
+            name: d.nama_barang || "Tanpa Nama",
+            category: d.kategori_id || "-",
+            stock: Number(d.stok_barang) || 0,
+            gambar: d.gambar_barang || null,
+
+            // satuan barang (pcs, dus, kilo)
+            satuan: d.satuan_utama || "-",
+
+            // harga berdasarkan satuan
+            harga: {
+              pcs: Number(d.harga_barang) || null,
+
+              dus: {
+                harga_dus: Number(d.harga_dus) || null,
+                harga_pcs_dus: Number(d.harga_pcs) || null,
+              },
+
+              kilo: {
+                per_kilo: Number(d.harga_per_kg) || null,
+                setengah_kilo: Number(d.harga_per_500g) || null,
+                seperempat_kilo: Number(d.harga_per_250g) || null,
+              },
+            },
+          };
+        })
+
         // 🔥 Urutkan dari yang terbaru
         .sort((a, b) => b.id - a.id);
 

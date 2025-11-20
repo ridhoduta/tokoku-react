@@ -36,11 +36,19 @@ export const CartProvider = ({ children }) => {
         .filter((item) => item.quantity > 0) // jika mau hapus otomatis kalau 0
     );
   };
+  const updateItemUnit = (id, selectedUnit, price) => {
+  setCartItems((prev) =>
+    prev.map((item) =>
+      item.id === id ? { ...item, selectedUnit, price } : item
+    )
+  );
+};
+
   const clearCart = () => setCartItems([]);
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeItem, clearCart, updateQuantity }}
+      value={{ cartItems, addToCart, removeItem, clearCart, updateQuantity, updateItemUnit }}
     >
       {children}
     </CartContext.Provider>

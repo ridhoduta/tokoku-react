@@ -5,22 +5,16 @@ import {
   MapPin,
   ChevronRight,
   Search,
-  Box,
-  Truck,
-  Wallet,
-  Wallet2Icon,
 } from "lucide-react";
 import { getPesanan } from "../../api/pesananApi";
 import { useNavigate } from "react-router-dom";
-import { bayarPesanan } from "../../api/pesananApi";
 import DootsLoader from "../../component/Loader/DootsLoader";
 
 export default function OrderListPage() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const nama = localStorage.getItem("nama");
   const navigate = useNavigate();
@@ -42,10 +36,9 @@ export default function OrderListPage() {
     dibatalkan: "bg-red-100 text-red-700",
   };
 
-  // Ambil semua pesanan dari API dan filter sesuai nama user
   useEffect(() => {
     const fetchOrders = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const response = await getPesanan();
         if (response.success) {
@@ -56,14 +49,13 @@ export default function OrderListPage() {
         }
       } catch (err) {
         console.error("Gagal mengambil pesanan:", err);
-      }finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
     if (nama) fetchOrders();
   }, [nama]);
 
-  // Filter pesanan berdasarkan status
   useEffect(() => {
     const filtered =
       selectedFilter === "all"
@@ -71,20 +63,16 @@ export default function OrderListPage() {
         : orders.filter((order) => order.status === selectedFilter);
     setFilteredOrders(filtered);
   }, [orders, selectedFilter]);
+
   if (loading) {
-      return (
-        <>
-          <div className="flex justify-center items-center py-12">
-            <DootsLoader />
-          </div>
-          <p className="flex justify-center ml-3 text-gray-600">
-            Memuat Pesanan
-          </p>
-        </>
-        
-      );
-    }
-  // console.log(orders);
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <DootsLoader />
+        <p className="text-gray-600 mt-3">Memuat Pesanan...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -132,13 +120,14 @@ export default function OrderListPage() {
             <p className="text-gray-500">Belum ada pesanan dengan status ini</p>
           </div>
         ) : (
-          
           <div className="space-y-4">
             {filteredOrders.map((order) => (
               <div
                 key={order.id}
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => navigate("/pelanggan/detail-pesanan", { state: { order } })}
+                onClick={() =>
+                  navigate("/pelanggan/detail-pesanan", { state: { order } })
+                }
               >
                 <div className="p-6">
                   {/* Order Header */}
@@ -152,9 +141,7 @@ export default function OrderListPage() {
                         >
                           {order.status}
                         </span>
-                        <span className="text-sm text-gray-500">
-                          {order.id}
-                        </span>
+                        <span className="text-sm text-gray-500">{order.id}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4" />
@@ -184,13 +171,15 @@ export default function OrderListPage() {
                             {product.nama_barang}
                           </h3>
                           <p className="text-xs text-gray-600">
-                            Jumlah: {product.qty}
+                            Jumlah: {product.qty}{" "}
+                            {product.satuan_dipilih ? `(${product.satuan_dipilih})` : ""}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Harga: Rp {product.harga_final.toLocaleString("id-ID")}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold">
-                            Rp {product.harga_barang.toLocaleString("id-ID")}
-                          </p>
+                        <div className="text-right font-bold text-purple-700">
+                          Rp {(product.harga_final * product.qty).toLocaleString("id-ID")}
                         </div>
                       </div>
                     ))}
@@ -203,9 +192,7 @@ export default function OrderListPage() {
                       {order.alamat}
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600 mb-1">
-                        Total Belanja
-                      </p>
+                      <p className="text-sm text-gray-600 mb-1">Total Belanja</p>
                       <p className="text-lg font-bold text-purple-700">
                         Rp {order.total_harga.toLocaleString("id-ID")}
                       </p>
@@ -220,4 +207,3 @@ export default function OrderListPage() {
     </div>
   );
 }
-

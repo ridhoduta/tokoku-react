@@ -60,12 +60,7 @@ const SidebarMenu = () => {
       label: "Pesanan",
       icon: <ShoppingCart className="w-5 h-5" />,
       path: "/admin/pesanan",
-    },
-    {
-      label: "Laporan",
-      icon: <BarChart3 className="w-5 h-5" />,
-      path: "/admin/laporan",
-    },
+    }
   ];
   const laporanItems = [
     { label: "Laporan Barang", path: "/admin/laporan/barang" },

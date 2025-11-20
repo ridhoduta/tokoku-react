@@ -12,39 +12,64 @@ const TambahModalBarang = ({
   const [formData, setFormData] = useState({
     nama_barang: "",
     kategori_id: "",
-    harga_barang: "",
+    satuan_utama: "",
     stok_barang: "",
+
+    // satuan PCS
+    harga_barang: "",
+
+    // satuan DUS
+    isi_per_dus: "",
+    harga_dus: "",
+    harga_pcs: "",
+
+    // satuan KG
+    harga_per_kg: "",
+    harga_per_500g: "",
+    harga_per_250g: "",
+
     gambar_barang: null,
   });
+
   const [editingId, setEditingId] = useState(null);
   const [kategori, setKategori] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // load kategori dari API
+  // Load kategori
   const loadKategori = async () => {
     const res = await getKategori();
 
     let data = [];
-    if (Array.isArray(res)) {
-      data = res;
-    } else if (res.success) {
-      data = res.data;
-    } else {
-      console.error(res.message);
-    }
+    if (Array.isArray(res)) data = res;
+    else if (res.success) data = res.data;
+    else console.error(res.message);
 
     setKategori(data);
   };
 
-  // isi form kalau edit
+  // Isi form saat edit
   useEffect(() => {
     if (isOpen) {
       setFormData({
         nama_barang: initialData.nama_barang || "",
         kategori_id: initialData.kategori_id || "",
-        harga_barang: initialData.harga_barang || "",
+        satuan_utama: initialData.satuan_utama || "",
         stok_barang: initialData.stok_barang || "",
+
+        // satuan PCS
+        harga_pcs: initialData.harga_pcs || "",
+
+        // satuan DUS
+        isi_per_dus: initialData.isi_per_dus || "",
+        harga_dus: initialData.harga_dus || "",
+        harga_pcs: initialData.harga_pcs || "",
+
+        // satuan KG
+        harga_per_kg: initialData.harga_per_kg || "",
+        harga_per_500g: initialData.harga_per_500g || "",
+        harga_per_250g: initialData.harga_per_250g || "",
       });
+
       setEditingId(initialData.id || null);
       loadKategori();
     }
@@ -53,34 +78,55 @@ const TambahModalBarang = ({
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
   const handleFileChange = (e) => {
     setFormData({ ...formData, gambar_barang: e.target.files[0] });
   };
 
-  // simpan barang (create / update)
+  // Submit barang sesuai satuan
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (formData[key]) {
-        payload.append(key, formData[key]);
-      }
-    });
 
-    setLoading(true); // ✅ aktifkan loader di sini
+    // Data umum
+    payload.append("nama_barang", formData.nama_barang);
+    payload.append("kategori_id", formData.kategori_id);
+    payload.append("satuan_utama", formData.satuan_utama);
+    payload.append("stok_barang", formData.stok_barang);
 
-    let res;
-    if (editingId) {
-      res = await updateBarang(editingId, payload);
-    } else {
-      res = await createBarang(payload);
+    // Data sesuai satuan utama
+    if (formData.satuan_utama === "pcs") {
+      payload.append("harga_barang", formData.harga_pcs);
     }
 
-    setLoading(false); // ✅ matikan loader setelah selesai
+    if (formData.satuan_utama === "dus") {
+      payload.append("isi_per_dus", formData.isi_per_dus);
+      payload.append("harga_dus", formData.harga_dus);
+      payload.append("harga_pcs", formData.harga_pcs);
+    }
+
+    if (formData.satuan_utama === "kg") {
+      payload.append("harga_per_kg", formData.harga_per_kg);
+      payload.append("harga_per_500g", formData.harga_per_500g);
+      payload.append("harga_per_250g", formData.harga_per_250g);
+    }
+
+    // Upload gambar
+    if (formData.gambar_barang) {
+      payload.append("gambar_barang", formData.gambar_barang);
+    }
+
+    setLoading(true);
+
+    let res;
+    if (editingId) res = await updateBarang(editingId, payload);
+    else res = await createBarang(payload);
+
+    setLoading(false);
 
     if (res.success) {
-      alert("Barang berhasil ditambah");
+      alert("Barang berhasil disimpan");
       await loadBarang();
       onClose();
     } else {
@@ -112,12 +158,13 @@ const TambahModalBarang = ({
       {/* Modal */}
       <div
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-          bg-white rounded-lg shadow-2xl w-full max-w-md z-50 p-8"
+        bg-white rounded-lg shadow-2xl w-full max-w-md z-50 p-8
+        overflow-y-auto max-h-[80vh]"
       >
-        {/* Header + Tombol Close */}
+        {/* Header */}
         <div className="mb-6 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">
-            Tambah Produk Baru
+            {editingId ? "Edit Produk" : "Tambah Produk Baru"}
           </h2>
           <button
             onClick={onClose}
@@ -140,7 +187,7 @@ const TambahModalBarang = ({
               value={formData.nama_barang}
               onChange={handleChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                  focus:outline-none focus:ring-2 focus:ring-purple-600"
+              focus:outline-none focus:ring-2 focus:ring-purple-600"
               placeholder="Masukkan nama produk"
             />
           </div>
@@ -155,7 +202,7 @@ const TambahModalBarang = ({
               value={formData.kategori_id}
               onChange={handleChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                  focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
+              focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
             >
               <option value="">-- Pilih Kategori --</option>
               {kategori.map((kat) => (
@@ -166,39 +213,155 @@ const TambahModalBarang = ({
             </select>
           </div>
 
-          {/* Harga & Stok */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Satuan Utama */}
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Satuan Utama
+            </label>
+            <select
+              name="satuan_utama"
+              value={formData.satuan_utama}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
+              focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
+            >
+              <option value="">-- Pilih Satuan --</option>
+              <option value="pcs">PCS</option>
+              <option value="dus">DUS</option>
+              <option value="kg">KG</option>
+            </select>
+          </div>
+
+          {/* Dynamic field berdasarkan satuan */}
+          {formData.satuan_utama === "pcs" && (
             <div>
               <label className="block text-gray-700 text-sm font-medium mb-2">
-                Harga
+                Harga per PCS
               </label>
               <input
                 type="number"
                 name="harga_barang"
                 value={formData.harga_barang}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                    focus:outline-none focus:ring-2 focus:ring-purple-600"
-                placeholder="0"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                placeholder="Harga per pcs"
               />
             </div>
+          )}
 
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">
-                Stok
-              </label>
-              <input
-                type="number"
-                name="stok_barang"
-                value={formData.stok_barang}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                    focus:outline-none focus:ring-2 focus:ring-purple-600"
-                placeholder="0"
-              />
-            </div>
+          {formData.satuan_utama === "dus" && (
+            <>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Isi per Dus (PCS)
+                </label>
+                <input
+                  type="number"
+                  name="isi_per_dus"
+                  value={formData.isi_per_dus}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                  placeholder="Contoh: 12 pcs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Harga per Dus
+                </label>
+                <input
+                  type="number"
+                  name="harga_dus"
+                  value={formData.harga_dus}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                  placeholder="Harga 1 dus"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Harga per PCS
+                </label>
+                <input
+                  type="number"
+                  name="harga_pcs"
+                  value={formData.harga_pcs}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                  placeholder="Harga 1 pcs"
+                />
+              </div>
+            </>
+          )}
+
+          {formData.satuan_utama === "kg" && (
+            <>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Harga per Kilogram
+                </label>
+                <input
+                  type="number"
+                  name="harga_per_kg"
+                  value={formData.harga_per_kg}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                  placeholder="Harga per 1 kg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Harga per 500 Gram
+                </label>
+                <input
+                  type="number"
+                  name="harga_per_500g"
+                  value={formData.harga_per_500g}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                  placeholder="Harga per 500g"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Harga per 250 Gram
+                </label>
+                <input
+                  type="number"
+                  name="harga_per_250g"
+                  value={formData.harga_per_250g}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                  placeholder="Harga per 250g"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Stok */}
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Stok (dalam satuan dasar)
+            </label>
+            <input
+              type="number"
+              name="stok_barang"
+              value={formData.stok_barang}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
+              focus:outline-none focus:ring-2 focus:ring-purple-600"
+              placeholder={
+                formData.satuan_utama === "kg"
+                  ? "Masukkan stok dalam gram"
+                  : "Masukkan stok dalam pcs"
+              }
+            />
           </div>
-          {/* Gambar Barang */}
+
+          {/* Gambar */}
           <div>
             <label className="block text-gray-700 text-sm font-medium mb-2">
               Gambar Barang
@@ -209,24 +372,24 @@ const TambahModalBarang = ({
               accept="image/png, image/jpeg"
               onChange={handleFileChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-      focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
+              focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
             />
           </div>
 
-          {/* Tombol Aksi */}
+          {/* Tombol */}
           <div className="grid grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               onClick={onClose}
               className="w-full py-3 border-2 border-purple-600 text-purple-600 
-                  rounded-lg font-medium hover:bg-purple-50 transition-colors"
+              rounded-lg font-medium hover:bg-purple-50 transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
               className="w-full py-3 bg-purple-600 text-white rounded-lg 
-                  font-medium hover:bg-purple-700 transition-colors"
+              font-medium hover:bg-purple-700 transition-colors"
             >
               Simpan
             </button>

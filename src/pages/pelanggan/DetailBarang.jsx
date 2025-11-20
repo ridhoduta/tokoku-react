@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../component/BarangPelanggan/CartContext";
 import DootsLoader from "../../component/Loader/DootsLoader";
-import { ShoppingCart, Package, Tag, CheckCircle } from 'lucide-react';
+import { ShoppingCart, Package, Tag, CheckCircle } from "lucide-react";
 
 export default function DetailBarang() {
   const { state } = useLocation();
@@ -12,7 +12,6 @@ export default function DetailBarang() {
 
   const product = state?.product;
 
-  // Jika user buka langsung tanpa state → redirect
   if (!product) {
     return (
       <div className="p-6">
@@ -26,25 +25,63 @@ export default function DetailBarang() {
       </div>
     );
   }
-  const handleAddToCart = async () => {
-    setIsLoading(true);
 
-    // Simulasi delay proses menambahkan ke keranjang
-    await new Promise((resolve) => setTimeout(resolve, 800));
+  /* =============================== *
+   *        HITUNG HARGA UTAMA      *
+   * =============================== */
+  const getDisplayPrice = () => {
+    const h = product?.harga;
+    if (!h) return 0;
 
-    addToCart(product);
-    setIsLoading(false);
-    setAlert();
+    if (product.satuan === "pcs") return h.pcs || 0;
+    if (product.satuan === "dus") return h.dus?.harga_dus || 0;
+    if (product.satuan === "kilo") return h.kilo?.per_kilo || 0;
 
-    // Notifikasi otomatis hilang setelah 2,5 detik
-    setTimeout(() => setShowAlert(false), 2500);
+    return 0;
   };
 
-  const [quantity, setQuantity] = useState(1);
+  /* =============================== *
+   *     LIST HARGA DETAIL SATUAN   *
+   * =============================== */
+  const getHargaList = () => {
+    const h = product?.harga;
+    if (!h) return [];
+
+    if (product.satuan === "pcs") {
+      return [{ label: "Harga per PCS", value: h.pcs }];
+    }
+
+    if (product.satuan === "dus") {
+      return [
+        { label: "Harga per Dus", value: h.dus?.harga_dus },
+        { label: "Harga per PCS (Dari Dus)", value: h.dus?.harga_pcs_dus },
+      ];
+    }
+
+    if (product.satuan === "kilo") {
+      return [
+        { label: "Harga per KG", value: h.kilo?.per_kilo },
+        { label: "Harga per 500g", value: h.kilo?.setengah_kilo },
+        { label: "Harga per 250g", value: h.kilo?.seperempat_kilo },
+      ];
+    }
+
+    return [];
+  };
+
+  const displayPrice = getDisplayPrice();
+
+  const handleAddToCart = async () => {
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    addToCart(product);
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
       <div className="max-w-7xl mx-auto">
+
         {/* Breadcrumb */}
         <div className="mb-6 text-sm text-gray-600">
           <span className="hover:text-purple-600 cursor-pointer">Home</span>
@@ -58,17 +95,20 @@ export default function DetailBarang() {
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="grid lg:grid-cols-2 gap-0">
-            {/* Bagian Kiri - Gambar Produk */}
+
+            {/* LEFT IMAGE */}
             <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 p-12 flex items-center justify-center">
               <div className="relative group">
                 <div className="absolute inset-0 bg-purple-600 rounded-2xl blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+
                 <img
                   src={product.gambar}
                   alt={product.name}
                   className="relative w-full h-auto max-w-lg object-contain drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              {/* Promo Badge */}
+
+              {/* Promo */}
               <div className="absolute top-6 left-6">
                 <span className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
                   <Tag className="w-4 h-4" />
@@ -77,9 +117,9 @@ export default function DetailBarang() {
               </div>
             </div>
 
-            {/* Bagian Kanan - Detail Produk */}
+            {/* RIGHT CONTENT */}
             <div className="flex flex-col p-12 space-y-8">
-              {/* Category Badge */}
+              {/* Category */}
               <div>
                 <span className="inline-flex items-center gap-2 text-sm font-semibold text-purple-700 bg-purple-50 px-4 py-2 rounded-full">
                   <Package className="w-4 h-4" />
@@ -87,24 +127,42 @@ export default function DetailBarang() {
                 </span>
               </div>
 
-              {/* Nama Produk */}
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 leading-tight">
-                  {product.name}
-                </h1>
-              </div>
+              {/* Name */}
+              <h1 className="text-4xl font-bold text-gray-900 leading-tight">
+                {product.name}
+              </h1>
 
-              {/* Harga */}
+              {/* Harga Utama */}
               <div className="flex items-baseline gap-4 pb-6 border-b border-gray-200">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Harga</p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    Harga ({product.satuan})
+                  </p>
                   <span className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                    Rp{product.price.toLocaleString("id-ID")}
+                    Rp{Number(displayPrice).toLocaleString("id-ID")}
                   </span>
                 </div>
               </div>
 
-              {/* Stock Info */}
+              {/* Harga Detail */}
+              <div className="bg-purple-50 p-4 rounded-xl space-y-2">
+                <h3 className="text-sm font-semibold text-purple-700">
+                  Rincian Harga
+                </h3>
+
+                {getHargaList().map((item, i) => (
+                  <div key={i} className="flex justify-between text-gray-700 text-sm">
+                    <span>{item.label}</span>
+                    <span className="font-semibold">
+                      {typeof item.value === "number" && item.value !== null
+                        ? "Rp " + item.value.toLocaleString("id-ID")
+                        : "-"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Stock */}
               <div className="flex items-center gap-3 bg-green-50 px-4 py-3 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 <span className="text-green-800 font-semibold">
@@ -115,23 +173,13 @@ export default function DetailBarang() {
 
               {/* Deskripsi */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900">
-                  Deskripsi Produk
-                </h2>
-                <div className="prose prose-sm text-gray-600 leading-relaxed">
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Quibusdam dolores corporis quaerat architecto ipsum
-                    reiciendis est eos. Quo voluptas dolorem quas fuga quod
-                    eligendi repudiandae labore maxime quasi aperiam maiores
-                    nisi ipsam autem, sequi ducimus et numquam ad aspernatur!
-                    Delectus voluptas, cupiditate velit quaerat fugiat sint
-                    libero veritatis porro temporibus.
-                  </p>
-                </div>
+                <h2 className="text-xl font-bold text-gray-900">Deskripsi Produk</h2>
+                <p className="prose prose-sm text-gray-600 leading-relaxed">
+                  Tidak ada deskripsi produk. Silakan hubungi penjual untuk informasi lebih lanjut.
+                </p>
               </div>
 
-              {/* Tombol Add to Cart */}
+              {/* Add to Cart */}
               <div className="pt-6">
                 <button
                   disabled={product.stock === 0 || isLoading}
@@ -160,7 +208,7 @@ export default function DetailBarang() {
                 </button>
               </div>
 
-              {/* Info Tambahan */}
+              {/* Extra */}
               <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-purple-600">✓</p>
@@ -176,6 +224,7 @@ export default function DetailBarang() {
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>

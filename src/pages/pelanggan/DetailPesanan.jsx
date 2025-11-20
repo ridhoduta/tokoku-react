@@ -9,6 +9,7 @@ export default function DetailPesanan() {
   const location = useLocation();
   const { order } = location.state || {};
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const snapScript = document.createElement("script");
     snapScript.src = "https://app.sandbox.midtrans.com/snap/snap.js";
@@ -37,7 +38,6 @@ export default function DetailPesanan() {
     "belum dibayar": "bg-red-100 text-red-700",
   };
 
-  // Handle pembayaran
   const handleBayarSekarang = async () => {
     setLoading(true);
     try {
@@ -49,7 +49,6 @@ export default function DetailPesanan() {
       };
 
       const res = await bayarPesanan(data);
-      console.log("Midtrans Response:", res);
 
       if (res.success && res.snapToken) {
         if (!window.snap) {
@@ -66,7 +65,6 @@ export default function DetailPesanan() {
       } else {
         alert("Gagal mendapatkan Snap Token");
       }
-      // setLoading(true);
     } catch (err) {
       console.error(err);
       alert("Terjadi kesalahan saat memproses pembayaran");
@@ -74,6 +72,7 @@ export default function DetailPesanan() {
       setLoading(false);
     }
   };
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
@@ -81,7 +80,6 @@ export default function DetailPesanan() {
       </div>
     );
   }
-  // Load Midtrans Snap
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -186,12 +184,16 @@ export default function DetailPesanan() {
                   <div className="flex-1">
                     <h3 className="font-semibold">{product.nama_barang}</h3>
                     <p className="text-sm text-gray-600">
-                      Jumlah: {product.qty}
+                      Jumlah: {product.qty}{" "}
+                      {product.satuan_dipilih ? `(${product.satuan_dipilih})` : ""}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Harga: Rp {product.harga_final.toLocaleString("id-ID")}
                     </p>
                   </div>
 
-                  <p className="font-bold">
-                    Rp {product.harga_barang.toLocaleString("id-ID")}
+                  <p className="font-bold text-purple-700">
+                    Rp {(product.harga_final * product.qty).toLocaleString("id-ID")}
                   </p>
                 </div>
               ))}

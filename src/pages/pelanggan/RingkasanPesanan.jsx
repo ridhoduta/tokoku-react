@@ -18,7 +18,6 @@ const RingkasanPesanan = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalData, setModalData] = useState(null);
 
-  
   const [pengiriman, setPengiriman] = useState("diantar");
   const [pembayaran, setPembayaran] = useState("transfer");
 
@@ -29,8 +28,9 @@ const RingkasanPesanan = () => {
     }
   }, [status, navigate]);
 
+  // Subtotal dari item.price dan quantity, fallback 0 jika belum pilih satuan
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + (item.price ?? 0) * item.quantity,
     0
   );
   const discount = 0;
@@ -42,6 +42,14 @@ const RingkasanPesanan = () => {
       return;
     }
 
+    // Pastikan semua item sudah pilih satuan
+    for (let item of cartItems) {
+      if (!item.selectedUnit) {
+        alert(`Pilih satuan untuk barang: ${item.name}`);
+        return;
+      }
+    }
+
     setIsLoading(true);
 
     const dataPesanan = {
@@ -50,15 +58,16 @@ const RingkasanPesanan = () => {
       barang_dipesan: cartItems.map((item) => ({
         barang_id: item.id,
         nama_barang: item.name,
-        harga_barang: item.price,
+        harga_final: item.price, // harga sesuai satuan dipilih
         qty: item.quantity,
-        gambar_barang: "gambar barang",
+        satuan_dipilih: item.selectedUnit, // wajib sesuai BE
+        gambar_barang: item.gambar,
       })),
       total_harga: total,
       status: "menunggu",
       tanggal: new Date().toLocaleDateString("id-ID"),
-      pengiriman, // ✅ dikirim ke backend
-      pembayaran, // ✅ dikirim ke backend
+      pengiriman,
+      pembayaran,
     };
 
     try {
@@ -80,7 +89,6 @@ const RingkasanPesanan = () => {
       setIsLoading(false);
     }
   };
-  // console.log(cartItems)
 
   if (isLoading) {
     return (
@@ -106,11 +114,10 @@ const RingkasanPesanan = () => {
       )}
 
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
-        {/* ================= LEFT COLUMN ================= */}
+        {/* LEFT COLUMN */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-bold mb-6">Ringkasan Pesanan</h1>
 
-          {/* 📦 Detail Penerima */}
           <div className="mb-8">
             <h2 className="font-semibold mb-4">Detail Penerima</h2>
             <div className="space-y-2 text-sm">
@@ -121,14 +128,9 @@ const RingkasanPesanan = () => {
             </div>
           </div>
 
-          {/* 🚚 Informasi Pengiriman */}
-
-          {/* 🛒 Daftar Barang */}
           <div className="space-y-4">
             {cartItems.length === 0 ? (
-              <p className="text-gray-500 text-center">
-                Keranjang masih kosong 😢
-              </p>
+              <p className="text-gray-500 text-center">Keranjang masih kosong 😢</p>
             ) : (
               cartItems.map((item) => (
                 <div
@@ -136,29 +138,95 @@ const RingkasanPesanan = () => {
                   className="flex items-center gap-4 p-4 bg-white border rounded-lg"
                 >
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <img
-                      src={item.gambar}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={item.gambar} className="w-full h-full object-cover" />
                   </div>
 
                   <div className="flex-1">
                     <h3 className="font-semibold mb-1">{item.name}</h3>
-                    <p className="text-xs text-gray-400">
-                      {item.category || "Tanpa kategori"}
-                    </p>
+                    <p className="text-xs text-gray-400">{item.category || "Tanpa kategori"}</p>
+
+                    {/* Radio button pilih satuan */}
+                    <div className="flex gap-2 mt-2 text-sm">
+                      {item.satuan === "dus" && (
+                        <>
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`unit-${item.id}`}
+                              value="dus"
+                              checked={item.selectedUnit === "dus"}
+                              onChange={() =>
+                                item.setSelectedUnit("dus") // pastikan di CartContext ada setter
+                              }
+                            />
+                            Dus
+                          </label>
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`unit-${item.id}`}
+                              value="pcs"
+                              checked={item.selectedUnit === "pcs"}
+                              onChange={() =>
+                                item.setSelectedUnit("pcs")
+                              }
+                            />
+                            Pcs
+                          </label>
+                        </>
+                      )}
+                      {item.satuan === "kg" && (
+                        <>
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`unit-${item.id}`}
+                              value="kg"
+                              checked={item.selectedUnit === "kg"}
+                              onChange={() =>
+                                item.setSelectedUnit("kg")
+                              }
+                            />
+                            1 Kg
+                          </label>
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`unit-${item.id}`}
+                              value="500g"
+                              checked={item.selectedUnit === "500g"}
+                              onChange={() =>
+                                item.setSelectedUnit("500g")
+                              }
+                            />
+                            500 g
+                          </label>
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`unit-${item.id}`}
+                              value="250g"
+                              checked={item.selectedUnit === "250g"}
+                              onChange={() =>
+                                item.setSelectedUnit("250g")
+                              }
+                            />
+                            250 g
+                          </label>
+                        </>
+                      )}
+                    </div>
+
                     <div className="flex items-center gap-2 mt-2">
                       <span className="font-bold text-purple-700">
-                        Rp {item.price.toLocaleString("id-ID")}
+                        Rp {(item.price ?? 0).toLocaleString("id-ID")}
                       </span>
-                      <span className="text-sm text-gray-600">
-                        x {item.quantity}
-                      </span>
+                      <span className="text-sm text-gray-600">x {item.quantity}</span>
                     </div>
                   </div>
 
                   <div className="text-right font-bold text-purple-700">
-                    Rp {(item.price * item.quantity).toLocaleString("id-ID")}
+                    Rp {((item.price ?? 0) * item.quantity).toLocaleString("id-ID")}
                   </div>
                 </div>
               ))
@@ -166,7 +234,7 @@ const RingkasanPesanan = () => {
           </div>
         </div>
 
-        {/* ================= RIGHT COLUMN ================= */}
+        {/* RIGHT COLUMN */}
         <div className="bg-white rounded-lg shadow-sm p-6 h-fit sticky top-8">
           <h2 className="text-xl font-bold mb-4">Ringkasan Pembayaran</h2>
 
@@ -187,6 +255,7 @@ const RingkasanPesanan = () => {
               Rp {total.toLocaleString("id-ID")}
             </span>
           </div>
+
           <div className="mb-8 pb-8 border-b">
             <h2 className="font-semibold mb-4">Metode Pengiriman</h2>
             <div className="space-y-2">
@@ -200,7 +269,6 @@ const RingkasanPesanan = () => {
                 />
                 <span>Diambil Langsung</span>
               </label>
-
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -216,13 +284,11 @@ const RingkasanPesanan = () => {
             <div className="mt-4 flex items-start gap-3">
               <Clock className="w-5 h-5 text-gray-600 mt-0.5" />
               <span className="text-sm text-gray-600">
-                Maksimal 1 jam setelah pembayaran selama jam operasional (07:00
-                - 21:00)
+                Maksimal 1 jam setelah pembayaran selama jam operasional (07:00 - 21:00)
               </span>
             </div>
           </div>
 
-          {/* 💳 Metode Pembayaran */}
           <div className="mb-8 pb-8 border-b">
             <h2 className="font-semibold mb-4">Metode Pembayaran</h2>
             <div className="space-y-2">
@@ -236,7 +302,6 @@ const RingkasanPesanan = () => {
                 />
                 <span>COD (Bayar di Tempat)</span>
               </label>
-
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -252,7 +317,7 @@ const RingkasanPesanan = () => {
 
           <button
             onClick={handleBayarSekarang}
-            className={`w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition-colors `}
+            className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition-colors"
           >
             Buat Pesanan
           </button>
