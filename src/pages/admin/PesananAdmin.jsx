@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getPesanan, updatePesanan, deletePesanan, updatePengiriman } from "../../api/pesananApi";
+import {
+  getPesanan,
+  updatePesanan,
+  deletePesanan,
+  updatePengiriman,
+} from "../../api/pesananApi";
 import PesananItem from "../../component/pesanan/PesananItem";
 import PesananList from "../../component/pesanan/PesananList";
-
 
 const PesananAdmin = () => {
   const [pesanans, setPesanans] = useState([]);
@@ -16,7 +20,8 @@ const PesananAdmin = () => {
     try {
       setLoading(true);
       const res = await getPesanan();
-      if (res.success === false) throw new Error(res.message || "Gagal memuat data");
+      if (res.success === false)
+        throw new Error(res.message || "Gagal memuat data");
       setPesanans(res.data || []);
     } catch (err) {
       console.error("Error getPesanan:", err);
@@ -32,11 +37,14 @@ const PesananAdmin = () => {
   const editPesanan = async (id, updatedData) => {
     try {
       const res = await updatePesanan(id, updatedData);
-      if (res.success === false) throw new Error(res.message || "Gagal update pesanan");
+      if (res.success === false)
+        throw new Error(res.message || "Gagal update pesanan");
 
       // update langsung di state
       setPesanans((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item))
+        prev.map((item) =>
+          item.id === id ? { ...item, ...updatedData } : item
+        )
       );
     } catch (err) {
       console.error("Error update pesanan:", err);
@@ -79,7 +87,8 @@ const PesananAdmin = () => {
   const handleDelete = async (id) => {
     try {
       const res = await deletePesanan(id);
-      if (res.success === false) throw new Error(res.message || "Gagal hapus pesanan");
+      if (res.success === false)
+        throw new Error(res.message || "Gagal hapus pesanan");
       setPesanans((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error("Error delete pesanan:", err);
@@ -97,7 +106,6 @@ const PesananAdmin = () => {
   // ================================
   // 🔹 UI Kondisi Loading & Error
   // ================================
-
 
   if (error) {
     return (
@@ -123,8 +131,6 @@ const PesananAdmin = () => {
         </div>
       </div>
       <div className="bg-white shadow-md rounded-xl overflow-hidden">
-
-
         <PesananList
           key={pesanans.id}
           pesanans={pesanans}
@@ -133,9 +139,6 @@ const PesananAdmin = () => {
           onUpdatePengiriman={handleUpdatePengiriman}
           loading={loading} // ✅ kirim ke child
         />
-
-
-
       </div>
     </div>
   );

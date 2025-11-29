@@ -35,13 +35,15 @@ export default function DashboardAdmin() {
   // ======================
   // 🔹 Hitung Statistik Dasar
   // ======================
-  const today = new Date().toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  const now = new Date();
+  const today = `${String(now.getDate()).padStart(2, "0")}-${String(
+    now.getMonth() + 1
+  ).padStart(2, "0")}-${now.getFullYear()}`;
 
   const pesananHariIni = pesanan.filter((p) => p.tanggal === today);
+  // console.log(pesananHariIni);
+
+  console.log();
   const belumDibayar = pesanan.filter(
     (p) => p.status_pembayaran?.toLowerCase() === "belum dibayar"
   );
@@ -93,7 +95,9 @@ export default function DashboardAdmin() {
   // 🔹 Data Grafik Penjualan
   // ======================
   const getFilteredSalesData = () => {
-    const selesai = pesanan.filter((p) => p.status?.toLowerCase() === "selesai");
+    const selesai = pesanan.filter(
+      (p) => p.status?.toLowerCase() === "selesai"
+    );
     const data = {};
 
     selesai.forEach((p) => {
@@ -125,7 +129,11 @@ export default function DashboardAdmin() {
           <div className="text-4xl font-bold text-blue-700 mb-1">
             {pesananHariIni.length}
           </div>
-          <div className="text-xs text-blue-600">Total Hari Ini<br />{today}</div>
+          <div className="text-xs text-blue-600">
+            Total Hari Ini
+            <br />
+            {today}
+          </div>
         </div>
 
         <div className="bg-orange-100 rounded-lg p-6">
@@ -133,7 +141,11 @@ export default function DashboardAdmin() {
           <div className="text-4xl font-bold text-orange-700 mb-1">
             {belumDibayar.length}
           </div>
-          <div className="text-xs text-orange-600">Total Pesanan<br />{totalPesanan}</div>
+          <div className="text-xs text-orange-600">
+            Total Pesanan
+            <br />
+            {totalPesanan}
+          </div>
         </div>
 
         <div className="bg-green-100 rounded-lg p-6">
@@ -226,7 +238,9 @@ export default function DashboardAdmin() {
                   <div className="font-medium text-gray-800">
                     {index + 1}. {item.nama}
                   </div>
-                  <div className="text-sm text-gray-500">{item.qty} kali dibeli</div>
+                  <div className="text-sm text-gray-500">
+                    {item.qty} kali dibeli
+                  </div>
                 </div>
                 <TrendingUp className="text-green-500" size={24} />
               </div>

@@ -84,6 +84,23 @@ export default function KeranjangPelanggan() {
 
                       {/* Pilihan satuan */}
                       <div className="mb-2 flex gap-2 text-sm">
+                        {item.satuan === "pcs" && (
+                          <>
+                            <label className="flex items-center gap-1">
+                              <input
+                                type="radio"
+                                name={`unit-${item.id}`}
+                                value="dus"
+                                checked={item.selectedUnit === "pcs"}
+                                onChange={() => {
+                                  const price = getPriceByUnit(item, "pcs");
+                                  updateItemUnit(item.id, "pcs", price);
+                                }}
+                              />
+                              pcs
+                            </label>
+                          </>
+                        )}
                         {item.satuan === "dus" && (
                           <>
                             <label className="flex items-center gap-1">

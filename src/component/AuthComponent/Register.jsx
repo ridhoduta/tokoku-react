@@ -1,5 +1,6 @@
 import React, { useState } from "react"; // pastikan path benar
 import { register } from "../../api/authApi";
+import DootsLoader from "../Loader/DootsLoader";
 
 const Register = () => {
   const [form, setForm] = useState({

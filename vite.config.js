@@ -14,4 +14,5 @@ export default defineConfig({
     host: '0.0.0.0',  // dengarkan semua host
     port: 5173,       // atau ubah sesuai kebutuhanmu
   },
+  base: '/react/',
 })

@@ -3,7 +3,7 @@ import PesananItem from "./PesananItem";
 import { Search } from "lucide-react";
 import TableLoader from "../Loader/TableLoader";
 
-const PesananList = ({ pesanans, onEdit, onDelete, onUpdateStatus, loading }) => {
+const PesananList = ({ pesanans, onEdit, onDelete, onUpdateStatus, loading, onUpdatePengiriman }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Filter data berdasarkan pencarian
@@ -85,6 +85,7 @@ const PesananList = ({ pesanans, onEdit, onDelete, onUpdateStatus, loading }) =>
                     onEdit={onEdit}
                     onDelete={onDelete}
                     onUpdateStatus={onUpdateStatus}
+                    onUpdatePengiriman={onUpdatePengiriman}
                   />
                 ))
               )}

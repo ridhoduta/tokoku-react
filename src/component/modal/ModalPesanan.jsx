@@ -1,21 +1,16 @@
-import { Calendar, CheckCircle, X, XCircle } from 'lucide-react'
-import React from 'react'
+import { Calendar, CheckCircle, X, XCircle } from "lucide-react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const ModalPesanan = ({pesananId, subtotal, tanggal, onDetail}) => {
+const ModalPesanan = ({ pesananId, subtotal, tanggal, onDetail }) => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center fixed inset-0 z-[9999]">
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"  />
-      
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
+
       {/* Modal */}
       <div className="bg-white rounded-xl shadow-2xl max-w-md w-full z-50 relative animate-scale-in">
-        {/* Close Button */}
-        <button 
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          <XCircle className="w-6 h-6" />
-        </button>
-
         <div className="p-8 text-center">
           {/* Success Icon */}
           <div className="flex justify-center mb-6">
@@ -31,7 +26,8 @@ const ModalPesanan = ({pesananId, subtotal, tanggal, onDetail}) => {
 
           {/* Description */}
           <p className="text-gray-600 mb-6">
-            Pesanan Anda telah berhasil dibuat dan sedang diproses. Kami akan mengirimkan notifikasi untuk update pesanan Anda.
+            Pesanan Anda telah berhasil dibuat dan sedang diproses. Kami akan
+            mengirimkan notifikasi untuk update pesanan Anda.
           </p>
 
           {/* Order Info Card */}
@@ -52,15 +48,15 @@ const ModalPesanan = ({pesananId, subtotal, tanggal, onDetail}) => {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <button 
+            <button
               className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition-colors"
               onClick={onDetail}
             >
               Lihat Detail Pesanan
             </button>
-            <button 
-              
+            <button
               className="w-full bg-white hover:bg-gray-50 text-purple-700 font-semibold py-3 rounded-lg border-2 border-purple-700 transition-colors"
+              onClick={() => navigate("/pelanggan/home")}
             >
               Kembali ke Beranda
             </button>
@@ -84,7 +80,7 @@ const ModalPesanan = ({pesananId, subtotal, tanggal, onDetail}) => {
         }
       `}</style>
     </div>
-  )
-}
+  );
+};
 
-export default ModalPesanan
+export default ModalPesanan;

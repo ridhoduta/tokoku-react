@@ -26,37 +26,63 @@ export default function KategoriPelanggan() {
   };
   const kategori_id = state?.kategori_id;
   const kategori_nama = state?.nama_kategori;
-
   const fetchBarang = async () => {
     try {
       setLoading(true);
+      setError(null);
 
-      const res = await getBarangByKategori(kategori_id);
+      const response = await getBarangByKategori(kategori_id);
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
 
-      const data = Array.isArray(res.data) ? res.data : [];
+      const formattedProducts = data
+        .map((item) => {
+          const d = item.data || {};
 
-      const formatted = data.map((item) => ({
-        id: item.id,
-        name: item.data.nama_barang,
-        category: item.data.kategori_id,
-        price: Number(item.data.harga_barang),
-        stock: Number(item.data.stok_barang),
-        gambar: item.data.gambar_barang,
-      }));
+          return {
+            id: item.id || d.barang_id,
+            name: d.nama_barang || "Tanpa Nama",
+            category: d.kategori_id || "-",
+            stock: Number(d.stok_barang) || 0,
+            gambar: d.gambar_barang || null,
 
-      setProducts(formatted);
+            // satuan barang (pcs, dus, kilo)
+            satuan: d.satuan_utama || "-",
+
+            // harga berdasarkan satuan
+            harga: {
+              pcs: Number(d.harga_barang) || null,
+
+              dus: {
+                harga_dus: Number(d.harga_dus) || null,
+                harga_pcs_dus: Number(d.harga_pcs) || null,
+              },
+
+              kilo: {
+                per_kilo: Number(d.harga_per_kg) || null,
+                setengah_kilo: Number(d.harga_per_500g) || null,
+                seperempat_kilo: Number(d.harga_per_250g) || null,
+              },
+            },
+          };
+        })
+
+        // 🔥 Urutkan dari yang terbaru
+        .sort((a, b) => b.id - a.id);
+        setProducts(formattedProducts);
     } catch (err) {
-      setError("Gagal mengambil barang berdasarkan kategori");
+      console.error("Error fetching barang:", err);
+      setError("Terjadi kesalahan saat mengambil data barang");
     } finally {
       setLoading(false);
     }
   };
-
-//   console.log(products);
+  
 
   const goToDetail = (product) => {
     navigate("/pelanggan/detail-barang", {
-      state: { product }
+      state: { product },
     });
   };
 

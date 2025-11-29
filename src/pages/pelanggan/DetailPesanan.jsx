@@ -10,6 +10,7 @@ export default function DetailPesanan() {
   const { order } = location.state || {};
   const [loading, setLoading] = useState(false);
 
+
   useEffect(() => {
     const snapScript = document.createElement("script");
     snapScript.src = "https://app.sandbox.midtrans.com/snap/snap.js";

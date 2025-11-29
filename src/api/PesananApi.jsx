@@ -10,7 +10,9 @@ export const getPesanan = async () => {
     return res.data;
   } catch (error) {
     console.error("Gagal mengambil data pesanan:", error);
-    return error.response?.data || { success: false, message: "Error getPesanan" };
+    return (
+      error.response?.data || { success: false, message: "Error getPesanan" }
+    );
   }
 };
 
@@ -23,7 +25,12 @@ export const getPesananById = async (id) => {
     return res.data;
   } catch (error) {
     console.error("Gagal mengambil detail pesanan:", error);
-    return error.response?.data || { success: false, message: "Error getPesananById" };
+    return (
+      error.response?.data || {
+        success: false,
+        message: "Error getPesananById",
+      }
+    );
   }
 };
 
@@ -47,7 +54,9 @@ export const createPesanan = async (data) => {
     return res.data;
   } catch (error) {
     console.error("Gagal membuat pesanan:", error);
-    return error.response?.data || { success: false, message: "Error createPesanan" };
+    return (
+      error.response?.data || { success: false, message: "Error createPesanan" }
+    );
   }
 };
 
@@ -60,7 +69,9 @@ export const updatePesanan = async (id, data) => {
     return res.data;
   } catch (error) {
     console.error("Gagal memperbarui pesanan:", error);
-    return error.response?.data || { success: false, message: "Error updatePesanan" };
+    return (
+      error.response?.data || { success: false, message: "Error updatePesanan" }
+    );
   }
 };
 
@@ -73,10 +84,17 @@ export const deletePesanan = async (id) => {
     return res.data;
   } catch (error) {
     console.error("Gagal menghapus pesanan:", error);
-    return error.response?.data || { success: false, message: "Error deletePesanan" };
+    return (
+      error.response?.data || { success: false, message: "Error deletePesanan" }
+    );
   }
 };
-export const bayarPesanan = async ({ pesananId, nama_pemesan, tanggal, pengiriman }) => {
+export const bayarPesanan = async ({
+  pesananId,
+  nama_pemesan,
+  tanggal,
+  pengiriman,
+}) => {
   try {
     const res = await api.post("/pesanan/bayar", {
       pesananId,
@@ -100,7 +118,9 @@ export const bayarPesanan = async ({ pesananId, nama_pemesan, tanggal, pengirima
     };
   } catch (error) {
     console.error("Gagal memproses pembayaran:", error);
-    return error.response?.data || { success: false, message: "Error bayarPesanan" };
+    return (
+      error.response?.data || { success: false, message: "Error bayarPesanan" }
+    );
   }
 };
 export const updatePengiriman = async (id, pengiriman) => {

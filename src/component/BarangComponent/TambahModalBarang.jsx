@@ -57,7 +57,7 @@ const TambahModalBarang = ({
         stok_barang: initialData.stok_barang || "",
 
         // satuan PCS
-        harga_pcs: initialData.harga_pcs || "",
+        harga_barang: initialData.harga_pcs || "",
 
         // satuan DUS
         isi_per_dus: initialData.isi_per_dus || "",
@@ -97,7 +97,7 @@ const TambahModalBarang = ({
 
     // Data sesuai satuan utama
     if (formData.satuan_utama === "pcs") {
-      payload.append("harga_barang", formData.harga_pcs);
+      payload.append("harga_barang", formData.harga_barang);
     }
 
     if (formData.satuan_utama === "dus") {

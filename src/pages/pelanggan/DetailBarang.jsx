@@ -11,6 +11,7 @@ export default function DetailBarang() {
   const [isLoading, setIsLoading] = useState(false);
 
   const product = state?.product;
+  console.log(product)
 
   if (!product) {
     return (
@@ -35,7 +36,7 @@ export default function DetailBarang() {
 
     if (product.satuan === "pcs") return h.pcs || 0;
     if (product.satuan === "dus") return h.dus?.harga_dus || 0;
-    if (product.satuan === "kilo") return h.kilo?.per_kilo || 0;
+    if (product.satuan === "kg") return h.kilo?.per_kilo || 0;
 
     return 0;
   };
@@ -58,7 +59,7 @@ export default function DetailBarang() {
       ];
     }
 
-    if (product.satuan === "kilo") {
+    if (product.satuan === "kg") {
       return [
         { label: "Harga per KG", value: h.kilo?.per_kilo },
         { label: "Harga per 500g", value: h.kilo?.setengah_kilo },
