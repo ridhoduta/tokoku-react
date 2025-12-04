@@ -148,3 +148,19 @@ export const getLaporan = async () => {
     );
   }
 };
+export const cancelPesanan = async (id) => {
+  try {
+    // Tidak perlu kirim body karena backend sudah set status = dibatalkan
+    const res = await api.put(`/pesanan/batal/${id}`);
+
+    return res.data;
+  } catch (error) {
+    console.error("Gagal membatalkan pesanan:", error);
+    return (
+      error.response?.data || {
+        success: false,
+        message: "Error cancelPesanan",
+      }
+    );
+  }
+};

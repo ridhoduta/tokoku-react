@@ -69,6 +69,7 @@ const RingkasanPesanan = () => {
       pengiriman,
       pembayaran,
     };
+    console.log(cartItems)
 
     try {
       const res = await createPesanan(dataPesanan);
@@ -106,9 +107,7 @@ const RingkasanPesanan = () => {
           subtotal={modalData.subtotal}
           tanggal={modalData.tanggal}
           onDetail={() =>
-            navigate("/pelanggan/detail-pesanan", {
-              state: { order: modalData.data },
-            })
+            navigate("/pelanggan/pesanan-list")
           }
         />
       )}
@@ -194,9 +193,9 @@ const RingkasanPesanan = () => {
                               type="radio"
                               name={`unit-${item.id}`}
                               value="500g"
-                              checked={item.selectedUnit === "500g"}
+                              checked={item.selectedUnit === "500gr"}
                               onChange={() =>
-                                item.setSelectedUnit("500g")
+                                item.setSelectedUnit("500gr")
                               }
                             />
                             500 g
@@ -206,9 +205,9 @@ const RingkasanPesanan = () => {
                               type="radio"
                               name={`unit-${item.id}`}
                               value="250g"
-                              checked={item.selectedUnit === "250g"}
+                              checked={item.selectedUnit === "250gr"}
                               onChange={() =>
-                                item.setSelectedUnit("250g")
+                                item.setSelectedUnit("250gr")
                               }
                             />
                             250 g

@@ -3,10 +3,14 @@ import {
   Package,
   Calendar,
   MapPin,
-  ChevronRight,
   Search,
+  Trash2,
 } from "lucide-react";
-import { getPesanan } from "../../api/pesananApi";
+import {
+  getPesanan,
+  cancelPesanan,
+  deletePesanan,
+} from "../../api/pesananApi";
 import { useNavigate } from "react-router-dom";
 import DootsLoader from "../../component/Loader/DootsLoader";
 
@@ -36,6 +40,41 @@ export default function OrderListPage() {
     dibatalkan: "bg-red-100 text-red-700",
   };
 
+  // ============================
+  // 🔹 BATALKAN PESANAN
+  // ============================
+  const handleCancel = async (order_id) => {
+    if (window.confirm(`Batalkan pesanan ${order_id}?`)) {
+      const res = await cancelPesanan(order_id);
+
+      if (res.success) {
+        alert("Pesanan berhasil dibatalkan");
+        window.location.reload();
+      } else {
+        alert(res.message);
+      }
+    }
+  };
+
+  // ============================
+  // 🔹 HAPUS PESANAN
+  // ============================
+  const handleDeleteFinal = async (order_id) => {
+    if (window.confirm(`Hapus pesanan ${order_id}?`)) {
+      const res = await deletePesanan(order_id);
+
+      if (res.success) {
+        alert("Pesanan berhasil dihapus");
+        window.location.reload();
+      } else {
+        alert(res.message);
+      }
+    }
+  };
+
+  // ============================
+  // 🔹 GET PESANAN
+  // ============================
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
@@ -56,6 +95,9 @@ export default function OrderListPage() {
     if (nama) fetchOrders();
   }, [nama]);
 
+  // ============================
+  // 🔹 FILTER
+  // ============================
   useEffect(() => {
     const filtered =
       selectedFilter === "all"
@@ -90,7 +132,7 @@ export default function OrderListPage() {
             />
           </div>
 
-          {/* Filter Tabs */}
+          {/* Filter */}
           <div className="flex gap-2 overflow-x-auto pb-2">
             {filters.map((filter) => (
               <button
@@ -130,7 +172,6 @@ export default function OrderListPage() {
                 }
               >
                 <div className="p-6">
-                  {/* Order Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
@@ -141,14 +182,49 @@ export default function OrderListPage() {
                         >
                           {order.status}
                         </span>
-                        <span className="text-sm text-gray-500">{order.id}</span>
+                        <span className="text-sm text-gray-500">
+                          {order.id}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4" />
                         <span>{order.tanggal}</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-6 h-6 text-gray-400" />
+
+                    {/* TOMBOL AKSI */}
+                    {order.status === "menunggu" ? (
+                      // BATALKAN
+                      <button
+                        className="p-2 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition text-yellow-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCancel(order.id);
+                        }}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    ) : order.status === "dibatalkan" ? (
+                      // HAPUS PERMANEN
+                      <button
+                        className="p-2 rounded-lg bg-red-50 hover:bg-red-100 transition text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteFinal(order.id);
+                        }}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    ) : (
+                      // DISABLE
+                      <button
+                        disabled
+                        className="p-2 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
                   </div>
 
                   {/* Products */}
@@ -172,27 +248,35 @@ export default function OrderListPage() {
                           </h3>
                           <p className="text-xs text-gray-600">
                             Jumlah: {product.qty}{" "}
-                            {product.satuan_dipilih ? `(${product.satuan_dipilih})` : ""}
+                            {product.satuan_dipilih
+                              ? `(${product.satuan_dipilih})`
+                              : ""}
                           </p>
                           <p className="text-xs text-gray-500">
-                            Harga: Rp {product.harga_final.toLocaleString("id-ID")}
+                            Harga: Rp{" "}
+                            {product.harga_final.toLocaleString("id-ID")}
                           </p>
                         </div>
                         <div className="text-right font-bold text-purple-700">
-                          Rp {(product.harga_final * product.qty).toLocaleString("id-ID")}
+                          Rp{" "}
+                          {(product.harga_final * product.qty).toLocaleString(
+                            "id-ID"
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Order Footer */}
+                  {/* Footer */}
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="text-sm text-gray-600">
                       <MapPin className="w-4 h-4 inline mr-1" />
                       {order.alamat}
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600 mb-1">Total Belanja</p>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Total Belanja
+                      </p>
                       <p className="text-lg font-bold text-purple-700">
                         Rp {order.total_harga.toLocaleString("id-ID")}
                       </p>

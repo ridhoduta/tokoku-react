@@ -5,11 +5,7 @@ import { updatePengiriman } from "../../api/pesananApi"; // pastikan path benar
 const PesananItem = ({ pesanan, onEdit, onDelete, onUpdateStatus, onUpdatePengiriman }) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  const handleDelete = () => {
-    if (window.confirm(`Hapus pesanan ${pesanan.id}?`)) {
-      onDelete(pesanan.id);
-    }
-  };
+
 
   const handleStatusChange = (newStatus) => {
     // console.log(newStatus)
@@ -81,9 +77,9 @@ const PesananItem = ({ pesanan, onEdit, onDelete, onUpdateStatus, onUpdatePengir
             }`}
           >
             <option value="menunggu">Menunggu</option>
-            <option value="proses">Proses</option>
+            <option value="diproses">Proses</option>
             <option value="selesai">Selesai</option>
-            <option value="batal">Batal</option>
+            <option value="dibatalkan">Batal</option>
           </select>
         </td>
 
@@ -123,7 +119,7 @@ const PesananItem = ({ pesanan, onEdit, onDelete, onUpdateStatus, onUpdatePengir
         </td>
 
         {/* AKSI */}
-        <td className="py-4 px-4">
+        {/* <td className="py-4 px-4">
           <div className="flex gap-3 justify-center items-center">
             <button
               className="text-red-600 hover:text-red-800 transition"
@@ -133,7 +129,7 @@ const PesananItem = ({ pesanan, onEdit, onDelete, onUpdateStatus, onUpdatePengir
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
-        </td>
+        </td> */}
       </tr>
 
       {/* DETAIL BARANG */}

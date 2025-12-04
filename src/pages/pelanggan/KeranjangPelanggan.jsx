@@ -38,6 +38,7 @@ export default function KeranjangPelanggan() {
     }
     return 0;
   };
+  // console.log(cartItems)
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-8">

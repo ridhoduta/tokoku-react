@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import BarangList from "../../component/BarangComponent/BarangList";
-import {
-  deleteBarang,
-  getBarang,
-} from "../../api/barangApi";
+import { deleteBarang, getBarang } from "../../api/barangApi";
 import { getKategori } from "../../api/kategoriApi";
 import TambahModalBarang from "../../component/BarangComponent/TambahModalBarang";
 import EditModalBarang from "../../component/BarangComponent/EditModalBarang";
@@ -19,8 +16,7 @@ const BarangAdmin = () => {
   const [totalCategories, setTotalCategories] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-  const [barang, setBarang] = useState([])
- 
+  const [barang, setBarang] = useState([]);
 
   // load barang
   const loadBarang = async () => {
@@ -36,7 +32,7 @@ const BarangAdmin = () => {
     }
 
     setProducts(data);
-    setLoading(false)
+    setLoading(false);
 
     // hitung statistik barang
     setTotalProducts(data.length);
@@ -79,57 +75,51 @@ const BarangAdmin = () => {
       }
     }
   };
-  const handleEdit = (barang) =>{
-    setBarang(barang)
-    setIsModalEditOpen(true)
-  }
+  const handleEdit = (barang) => {
+    setBarang(barang);
+    setIsModalEditOpen(true);
+  };
 
   return (
     <>
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
               Manajemen Produk
             </h2>
             <p className="text-gray-500 text-sm">Kelola Produk Sembako Anda</p>
           </div>
+
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 flex items-center gap-2"
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 w-full md:w-auto"
           >
             + Tambah Produk
           </button>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
+
+      {/* Statistik Responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow p-6 text-center">
           <p className="text-gray-500 text-sm mb-1">Total Produk</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">
-            {totalProducts}
-          </p>
+          <p className="text-2xl font-bold text-gray-800">{totalProducts}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
+
+        <div className="bg-white rounded-lg shadow p-6 text-center">
           <p className="text-gray-500 text-sm mb-1">Stok Total</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">{totalStock}</p>
+          <p className="text-2xl font-bold text-gray-800">{totalStock}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
+
+        <div className="bg-white rounded-lg shadow p-6 text-center">
           <p className="text-gray-500 text-sm mb-1">Kategori</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">
-            {totalCategories}
-          </p>
+          <p className="text-2xl font-bold text-gray-800">{totalCategories}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
+
+        <div className="bg-white rounded-lg shadow p-6 text-center">
           <p className="text-gray-500 text-sm mb-1">Kategori</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">
-            {totalCategories}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-center w-64">
-          <p className="text-gray-500 text-sm mb-1">Kategori</p>
-          <p className="text-2xl font-bold text-gray-800 mb-1">
-            {totalCategories}
-          </p>
+          <p className="text-2xl font-bold text-gray-800">{totalCategories}</p>
         </div>
       </div>
 
@@ -145,11 +135,11 @@ const BarangAdmin = () => {
         loadBarang={loadBarang}
       />
       <EditModalBarang
-      isOpen={isModalEditOpen}
-      barang = {barang}
-      kategori={kategori}
-      onClose={() => setIsModalEditOpen(false)}
-      loadBarang={loadBarang}
+        isOpen={isModalEditOpen}
+        barang={barang}
+        kategori={kategori}
+        onClose={() => setIsModalEditOpen(false)}
+        loadBarang={loadBarang}
       />
     </>
   );
