@@ -64,9 +64,6 @@ const PesananList = ({ pesanans, onEdit, onDelete, onUpdateStatus, loading, onUp
                 <th className="text-center py-3 px-4 font-semibold text-gray-600">
                   Barang
                 </th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-600">
-                  Aksi
-                </th>
               </tr>
             </thead>
             <tbody>

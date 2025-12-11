@@ -49,7 +49,7 @@ const SidebarMenu = () => {
   ];
 
   const laporanItems = [
-    { label: "Laporan Barang", path: "/admin/laporan/barang" },
+    // { label: "Laporan Barang", path: "/admin/laporan/barang" },
     { label: "Laporan Pesanan", path: "/admin/laporan/pesanan" },
   ];
 

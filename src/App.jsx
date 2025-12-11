@@ -17,6 +17,7 @@ import LaporanPesanan from "./pages/admin/laporan/LaporanPesanan";
 import DetailBarang from "./pages/pelanggan/DetailBarang";
 import KategoriPelanggan from "./pages/pelanggan/KategoriPelanggan";
 import SearchPelanggan from "./pages/pelanggan/SearchPelanggan";
+import Tentang from "./pages/Tentang";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/tentang" element={<Tentang />} />
 
         {/* Halaman Admin (hanya R001) */}
         <Route
