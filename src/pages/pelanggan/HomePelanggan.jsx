@@ -120,25 +120,30 @@ export default function HomePelanggan() {
   }
 
   return (
-    <div className="relative max-w-7xl mx-auto px-4 py-8">
+    <div className="relative w-full">
       {/* 🔥 Alert muncul di atas, tanpa menghapus halaman */}
       {showAlert && (
         <div
-          className="absolute top-2 left-1/2 transform -translate-x-1/2 
-          bg-green-600 text-white text-sm px-5 py-2 rounded-full shadow-lg 
-          flex items-center gap-2 animate-fadeInOut z-20"
+          className="fixed top-24 left-1/2 transform -translate-x-1/2 
+          bg-green-500/90 backdrop-blur-md text-white text-sm px-6 py-3 rounded-2xl shadow-xl shadow-green-500/20
+          flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 z-50 border border-white/20"
         >
-          <CheckCircle className="w-4 h-4" />
-          <span>Berhasil ditambahkan ke keranjang!</span>
-          <button onClick={closeAlert} className="ml-3 font-bold bg-green-600">
-            <X />
+          <CheckCircle className="w-5 h-5 text-green-100" />
+          <span className="font-medium tracking-wide">Berhasil ditambahkan ke keranjang!</span>
+          <button onClick={closeAlert} className="ml-2 hover:bg-green-600/50 p-1 rounded-lg transition-colors">
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mb-6">Daftar Produk</h2>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Belanja Sekarang</h2>
+          <p className="text-gray-500 font-medium mt-1">Temukan penawaran terbaik hari ini.</p>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
         <BarangpList
           products={products}
           setAlert={setAlert}

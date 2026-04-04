@@ -41,11 +41,11 @@ export default function KeranjangPelanggan() {
   // console.log(cartItems)
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-8">
-      <div className="grid grid-cols-3 gap-8">
+    <div className="min-h-screen bg-gray-50/50 py-8">
+      <div className="container-custom grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Section */}
-        <div className="col-span-2">
-          <h1 className="text-3xl font-bold mb-6">Keranjang</h1>
+        <div className="lg:col-span-2">
+          <h1 className="text-3xl sm:text-4xl font-black mb-8 text-gray-900 tracking-tight">Keranjang Belanja</h1>
 
           <div className="flex gap-4 mb-6">
             <button
@@ -66,14 +66,15 @@ export default function KeranjangPelanggan() {
               {cartItems.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-lg p-4 shadow-sm"
+                  className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-premium transition-all duration-300"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <div className="w-16 h-16 rounded-lg flex items-center justify-center bg-purple-700">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                    <div className="w-24 h-24 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0 p-2 border border-gray-100">
+                      <div className="w-full h-full rounded-lg flex items-center justify-center overflow-hidden">
                         <img
                           src={item.gambar}
-                          className="w-full h-full object-cover"
+                          alt={item.name}
+                          className="w-full h-full object-cover rounded-lg"
                         />
                       </div>
                     </div>
@@ -204,7 +205,7 @@ export default function KeranjangPelanggan() {
 
                     {/* Total per item dan hapus */}
                     <div className="flex items-center gap-4">
-                      <span className="font-bold text-purple-700 min-w-[100px] text-right">
+                      <span className="font-black text-xl text-brand-700 min-w-[120px] text-right">
                         Rp{" "}
                         {((item.price ?? 0) * item.quantity).toLocaleString(
                           "id-ID"
@@ -235,9 +236,9 @@ export default function KeranjangPelanggan() {
                 <span>Rp {subtotal.toLocaleString("id-ID")}</span>
               </div>
               <div className="border-t pt-4">
-                <div className="flex justify-between font-bold text-lg">
+                <div className="flex justify-between font-black text-xl">
                   <span>Total Belanja</span>
-                  <span className="text-purple-700">
+                  <span className="text-brand-700">
                     Rp {total.toLocaleString("id-ID")}
                   </span>
                 </div>
@@ -245,10 +246,10 @@ export default function KeranjangPelanggan() {
             </div>
 
             <button
-              className="w-full bg-purple-700 text-white py-3 rounded-lg font-semibold hover:bg-purple-800 transition-colors"
+              className="w-full btn-primary py-4 mt-2 shadow-brand-500/20 shadow-xl"
               onClick={handleCheckout}
             >
-              Checkout
+              Checkout Sekarang
             </button>
           </div>
         </div>

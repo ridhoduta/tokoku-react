@@ -63,11 +63,11 @@ const BarangpItem = ({ product, setAlert, onSelect }) => {
   const displayPrice = getDisplayPrice();
 
   return (
-    <div className="max-w-sm mx-auto p-4 mb-6">
-      <div className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden flex flex-col h-full">
+    <div className="mx-auto w-full mb-6">
+      <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-premium transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full active:scale-[0.98]">
 
         {/* IMAGE */}
-        <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 aspect-square overflow-hidden">
+        <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 aspect-[4/3] overflow-hidden">
           {product.gambar ? (
             <img
               src={product.gambar}
@@ -87,7 +87,7 @@ const BarangpItem = ({ product, setAlert, onSelect }) => {
 
           {/* Category */}
           <div className="mb-3">
-            <span className="inline-block text-xs font-semibold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-full">
+            <span className="inline-block text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-100 uppercase tracking-wider">
               {product.category}
             </span>
           </div>
@@ -100,8 +100,8 @@ const BarangpItem = ({ product, setAlert, onSelect }) => {
           {/* PRICE */}
           <div className="flex items-center justify-between mb-4 mt-auto">
             <div className="flex flex-col">
-              <span className="text-xs text-gray-500 mb-0.5">Harga</span>
-              <span className="text-2xl font-bold text-purple-700">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Harga</span>
+              <span className="text-xl sm:text-2xl font-black text-brand-700">
                 Rp{Number(displayPrice).toLocaleString("id-ID")}
               </span>
             </div>
@@ -113,9 +113,9 @@ const BarangpItem = ({ product, setAlert, onSelect }) => {
           </div>
 
           {/* SATUAN & HARGA DETAIL */}
-          <div className="mt-2 mb-4 bg-purple-50 p-3 rounded-lg">
-            <div className="text-xs font-semibold text-purple-700 mb-1">
-              Satuan: {product.satuan}
+          <div className="mt-2 mb-4 bg-gray-50 p-3 rounded-xl border border-gray-100">
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 border-b border-gray-200 pb-1">
+              Satuan Utama: <span className="text-brand-600">{product.satuan}</span>
             </div>
 
             {getHargaList().map((item, i) => (
@@ -131,39 +131,39 @@ const BarangpItem = ({ product, setAlert, onSelect }) => {
           </div>
 
           {/* BUTTONS */}
-          <div className="flex gap-2 pt-3 border-t border-gray-100">
+          <div className="flex gap-3 pt-4 mt-2 border-t border-gray-100">
+            {/* Details */}
+            <button
+              onClick={() => onSelect(product)}
+              className="flex items-center justify-center p-3 rounded-xl 
+                bg-brand-50 text-brand-600 hover:bg-brand-100 hover:text-brand-800 transition-colors duration-200"
+              title="Lihat Detail Produk"
+            >
+              <Eye className="w-5 h-5" />
+            </button>
+
             {/* Add To Cart */}
             <button
               onClick={handleAddToCart}
               disabled={isLoading}
-              className={`flex items-center justify-center gap-2 flex-1 py-3 rounded-lg font-semibold text-sm
-                transition-all duration-200 text-white shadow-sm
+              className={`flex items-center justify-center gap-2 flex-1 py-3 px-4 rounded-xl font-bold text-sm
+                transition-all duration-300
                 ${isLoading
-                  ? "bg-purple-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-md active:scale-95"
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "btn-primary shadow-lg shadow-brand-500/20 hover:-translate-y-0.5"
                 }`}
             >
               {isLoading ? (
                 <>
                   <DootsLoader />
-                  <span>Menambahkan...</span>
+                  <span>Loading...</span>
                 </>
               ) : (
                 <>
-                  <ShoppingCart className="w-4 h-4" />
-                  <span>Keranjang</span>
+                  <ShoppingCart className="w-4 h-4 text-white" />
+                  <span>+ Keranjang</span>
                 </>
               )}
-            </button>
-
-            {/* Details */}
-            <button
-              onClick={() => onSelect(product)}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-sm
-                bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-200 hover:shadow-sm active:scale-95"
-            >
-              <Eye className="w-4 h-4" />
-              <span className="hidden sm:inline">Detail</span>
             </button>
           </div>
 

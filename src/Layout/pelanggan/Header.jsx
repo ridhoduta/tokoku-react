@@ -72,30 +72,30 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm relative z-50">
-      <div className="w-full px-8 py-3">
-        <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-50 glass-card border-b border-gray-200/50 shadow-sm">
+      <div className="container-custom py-4">
+        <div className="flex items-center justify-between gap-6">
           {/* 🛍️ Logo dan Navigasi */}
           <div className="flex items-center gap-8">
             <div
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer group"
               onClick={() => navigate("/pelanggan/home")}
             >
-              <div className="w-8 h-8 bg-purple-700 rounded flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
                 <Package className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-purple-700">TOKOKU</span>
+              <span className="text-2xl font-black tracking-tight text-brand-700 group-hover:text-brand-800 transition-colors">TOKOKU</span>
             </div>
 
-            <nav className="flex items-center gap-6 relative">
+            <nav className="hidden lg:flex items-center gap-6 relative">
               <div
                 className="relative"
                 onClick={handleOpenKategori}
                 onMouseLeave={() => setOpenKategori(false)}
               >
-                <button className="flex items-center gap-2 text-gray-700 hover:text-purple-700">
-                  <BarChart2 />
-                  <span className="text-sm font-medium">KATEGORI</span>
+                <button className="flex items-center gap-2 text-gray-600 hover:text-brand-600 font-bold transition-colors">
+                  <BarChart2 className="w-5 h-5" />
+                  <span className="text-sm">KATEGORI</span>
                 </button>
 
                 {openKategori && (
@@ -127,19 +127,19 @@ export default function Header() {
           </div>
 
           {/* 🔍 Search Bar */}
-          <form onSubmit={handleSearch}>
-            <div className="relative">
+          <form onSubmit={handleSearch} className="flex-1 max-w-2xl hidden md:block">
+            <div className="relative group">
               <input
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 placeholder="Cari produk favorit kamu..."
-                className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-700"
+                className="w-full px-5 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all font-medium text-sm text-gray-700"
               />
 
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple-700 p-2 rounded-lg hover:bg-purple-800"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-brand-600 p-2 rounded-lg hover:bg-brand-700 transition-colors shadow-md"
               >
                 <Search className="w-4 h-4 text-white" />
               </button>
@@ -151,11 +151,11 @@ export default function Header() {
             {/* 🛒 Cart */}
             <button
               onClick={() => navigate("/pelanggan/keranjang")}
-              className="relative p-2 hover:bg-gray-100 rounded-lg"
+              className="relative p-2.5 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 ml-2"
             >
-              <ShoppingCart className="w-6 h-6 text-purple-700" />
+              <ShoppingCart className="w-5 h-5 text-gray-700" />
               {totalItems > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white shadow-sm">
                   {totalItems}
                 </span>
               )}
@@ -165,10 +165,10 @@ export default function Header() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setOpenDropdown(!openDropdown)}
-                className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200"
               >
                 <User className="w-5 h-5 text-gray-700" />
-                <span className="text-sm font-medium">{nama}</span>
+                <span className="text-sm font-bold text-gray-700 hidden sm:block">{nama}</span>
               </button>
 
               {openDropdown && (

@@ -1,6 +1,7 @@
 import React from "react";
 import { ShoppingBag, Users, Github, Music, Instagram } from "lucide-react";
-import Navbar from "./navbar";
+import Navbar from "../component/layout/Navbar";
+import Footer from "../component/layout/Footer";
 
 export default function Tentang() {
   const teamMembers = [
@@ -11,7 +12,7 @@ export default function Tentang() {
         "https://qvpjaduprxeeowfxzrkk.supabase.co/storage/v1/object/public/Storage/WhatsApp%20Image%202025-12-11%20at%2016.06.55.jpeg",
       description:
         "Ridho Duta Yuwana bertanggung jawab penuh pada pengembangan kode (coding) serta implementasi fungsi-fungsi utama sistem. Selain membangun fitur aplikasi, Ridho juga melakukan hosting dan deployment agar aplikasi dapat dijalankan secara online dan diakses oleh pengguna.",
-      instagram: "#",
+      instagram: "https://www.instagram.com/dutaywn/",
       tiktok: "#",
       github: "#",
     },
@@ -22,8 +23,8 @@ export default function Tentang() {
         "https://qvpjaduprxeeowfxzrkk.supabase.co/storage/v1/object/public/Storage/WhatsApp%20Image%202025-12-11%20at%2019.31.49.jpeg",
       description:
         "Serly Tritanti berperan sebagai perancang antarmuka aplikasi dengan membuat desain UI melalui Figma agar tampilan sistem mudah digunakan dan konsisten. Selain itu, Serli juga menyusun Configuration Guide Book sebagai panduan konfigurasi sistem untuk memastikan proses setup dapat dilakukan dengan benar.",
-      instagram: "#",
-      tiktok: "#",
+      instagram: "https://www.instagram.com/errrianaaa?igsh=MWh2ZXRtMHdtdmZoeQ==",
+      tiktok: " https://www.tiktok.com/@albirunifarabi?_r=1&_t=ZS-928MOasFDxk",
       github: "#",
     },
     {
@@ -33,8 +34,8 @@ export default function Tentang() {
         "https://qvpjaduprxeeowfxzrkk.supabase.co/storage/v1/object/public/Storage/WhatsApp%20Image%202025-12-11%20at%2019.31.49%20(1).jpeg",
       description:
         "Aldo Wahyu Adiwangsa bertanggung jawab dalam penyusunan dokumen Software Requirements Specification (SRS) sebagai dasar kebutuhan sistem. Aldo juga membantu dokumentasi proyek serta melakukan quality control untuk memastikan seluruh dokumen dan hasil pekerjaan memenuhi standar dan terbebas dari kesalahan.",
-      instagram: "#",
-      tiktok: "#",
+      instagram: "https://www.instagram.com/aldowhyu_05?igsh=MXFyNzRhdW1ubmhsbg==",
+      tiktok: "https://www.tiktok.com/@aldowhyu_05",
       github: "#",
     },
     {
@@ -44,8 +45,8 @@ export default function Tentang() {
         "https://qvpjaduprxeeowfxzrkk.supabase.co/storage/v1/object/public/Storage/WhatsApp%20Image%202025-12-11%20at%2019.31.48.jpeg",
       description:
         "Muhammad Ghibran Rafaelo bertugas membuat video demonstrasi aplikasi sebagai dokumentasi multimedia yang menjelaskan fungsi dan cara kerja sistem. Selain itu, Ghibran turut mendukung proses quality control dengan memastikan kesesuaian antara video, dokumentasi, dan fitur aplikasi.",
-      instagram: "#",
-      tiktok: "#",
+      instagram: "https://www.instagram.com/muhh.ghibranr/",
+      tiktok: "",
       github: "#",
     },
     {
@@ -55,8 +56,8 @@ export default function Tentang() {
         "https://qvpjaduprxeeowfxzrkk.supabase.co/storage/v1/object/public/Storage/WhatsApp%20Image%202025-12-11%20at%2019.31.48%20(1).jpeg",
       description:
         "Bima Nur Khoiri menyusun Manual Book sebagai panduan penggunaan aplikasi agar pengguna memahami cara mengoperasikan sistem. Bima juga berkontribusi dalam dokumentasi tambahan serta quality control, termasuk pengecekan akhir sebelum laporan dan hasil proyek diselesaikan.",
-      instagram: "#",
-      tiktok: "#",
+      instagram: "https://www.instagram.com/_biim4?igsh=Y3N0bGNhdXdieXhx",
+      tiktok: "https://www.tiktok.com/@_bimbima?_r=1&_t=ZS-928MdtyKFFq",
       github: "#",
     },
   ];
@@ -283,7 +284,7 @@ export default function Tentang() {
                 🛠️
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Panduan Admin
+                Manual Book
               </h3>
               <p className="text-gray-600">
                 Panduan lengkap untuk menggunakan aplikasi ini.
@@ -311,92 +312,7 @@ export default function Tentang() {
       </section>
 
       {/* Footer */}
-      <footer className="w-full bg-gray-900 text-white py-8 sm:py-12">
-        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20">
-          <div className="max-w-screen-2xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <div className="w-8 h-8 bg-purple-700 rounded flex items-center justify-center">
-                    <ShoppingBag className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold">TOKOKU</span>
-                </div>
-                <p className="text-gray-400 text-sm">
-                  Belanja kebutuhan harian jadi lebih mudah dan praktis
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-bold mb-4">Tentang</h4>
-                <ul className="space-y-2 text-gray-400 text-sm">
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Tentang Kami
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Karir
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Blog
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold mb-4">Bantuan</h4>
-                <ul className="space-y-2 text-gray-400 text-sm">
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      FAQ
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Hubungi Kami
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Syarat & Ketentuan
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold mb-4">Ikuti Kami</h4>
-                <ul className="space-y-2 text-gray-400 text-sm">
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Facebook
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Instagram
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Twitter
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-              <p>&copy; 2025 TOKOKU. All rights reserved.</p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
