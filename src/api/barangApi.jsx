@@ -38,9 +38,7 @@ export const getBarangByKategori = async (kategori_id) => {
 // CREATE barang (hanya R001/Admin)
 export const createBarang = async (data) => {
   try {
-    const res = await api.post("/barang", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await api.post("/barang", data);
     return res.data;
   } catch (err) {
     return (

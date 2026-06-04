@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { updateBarang, createBarang } from "../../api/barangApi";
 import { getKategori } from "../../api/kategoriApi";
 import { X } from "lucide-react";
+import { uploadToSupabase } from "../../utils/supabase";
 
 const TambahModalBarang = ({
   isOpen,
@@ -68,6 +69,8 @@ const TambahModalBarang = ({
         harga_per_kg: initialData.harga_per_kg || "",
         harga_per_500g: initialData.harga_per_500g || "",
         harga_per_250g: initialData.harga_per_250g || "",
+
+        gambar_barang: initialData.gambar_barang || null,
       });
 
       setEditingId(initialData.id || null);
@@ -86,51 +89,65 @@ const TambahModalBarang = ({
   // Submit barang sesuai satuan
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const payload = new FormData();
-
-    // Data umum
-    payload.append("nama_barang", formData.nama_barang);
-    payload.append("kategori_id", formData.kategori_id);
-    payload.append("satuan_utama", formData.satuan_utama);
-    payload.append("stok_barang", formData.stok_barang);
-
-    // Data sesuai satuan utama
-    if (formData.satuan_utama === "pcs") {
-      payload.append("harga_barang", formData.harga_barang);
-    }
-
-    if (formData.satuan_utama === "dus") {
-      payload.append("isi_per_dus", formData.isi_per_dus);
-      payload.append("harga_dus", formData.harga_dus);
-      payload.append("harga_pcs", formData.harga_pcs);
-    }
-
-    if (formData.satuan_utama === "kg") {
-      payload.append("harga_per_kg", formData.harga_per_kg);
-      payload.append("harga_per_500g", formData.harga_per_500g);
-      payload.append("harga_per_250g", formData.harga_per_250g);
-    }
-
-    // Upload gambar
-    if (formData.gambar_barang) {
-      payload.append("gambar_barang", formData.gambar_barang);
-    }
-
     setLoading(true);
 
-    let res;
-    if (editingId) res = await updateBarang(editingId, payload);
-    else res = await createBarang(payload);
+    let imageUrl = null;
+    try {
+      // Jika user memilih file baru (bertipe File)
+      if (formData.gambar_barang instanceof File) {
+        const uploadRes = await uploadToSupabase(formData.gambar_barang, "uploads", "barang");
+        if (!uploadRes.success) {
+          throw new Error(uploadRes.error || "Gagal mengunggah gambar");
+        }
+        imageUrl = uploadRes.publicUrl;
+      } else if (typeof formData.gambar_barang === "string") {
+        // Jika sudah berupa URL string (dari data edit)
+        imageUrl = formData.gambar_barang;
+      }
 
-    setLoading(false);
+      // Buat JSON payload biasa
+      const payload = {
+        nama_barang: formData.nama_barang,
+        kategori_id: formData.kategori_id,
+        satuan_utama: formData.satuan_utama,
+        stok_barang: formData.stok_barang,
+        gambar_barang: imageUrl, // Berupa URL string atau null
+      };
 
-    if (res.success) {
-      alert("Barang berhasil disimpan");
-      await loadBarang();
-      onClose();
-    } else {
-      alert(res.message || "Terjadi kesalahan");
+      // Data sesuai satuan utama
+      if (formData.satuan_utama === "pcs") {
+        payload.harga_barang = formData.harga_barang;
+      }
+
+      if (formData.satuan_utama === "dus") {
+        payload.isi_per_dus = formData.isi_per_dus;
+        payload.harga_dus = formData.harga_dus;
+        payload.harga_pcs = formData.harga_pcs;
+      }
+
+      if (formData.satuan_utama === "kg") {
+        payload.harga_per_kg = formData.harga_per_kg;
+        payload.harga_per_500g = formData.harga_per_500g;
+        payload.harga_per_250g = formData.harga_per_250g;
+      }
+
+      let res;
+      if (editingId) res = await updateBarang(editingId, payload);
+      else res = await createBarang(payload);
+
+      setLoading(false);
+
+      if (res.success) {
+        alert("Barang berhasil disimpan");
+        await loadBarang();
+        onClose();
+      } else {
+        alert(res.message || "Terjadi kesalahan saat menyimpan barang");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Gagal menyimpan barang:", error);
+      alert(error.message || "Terjadi kesalahan");
     }
   };
 
